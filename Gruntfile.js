@@ -57,7 +57,7 @@ module.exports = function(grunt) {
             if (m) registry.push(m);
           });
           grunt.file.write('registry/ships.json', JSON.stringify(registry, " ", 2));
-          grunt.file.write('registry/ships.json.js', "window['hull-ships-registry:" + org + "'] = " + JSON.stringify(registry) + ";");
+          grunt.file.write('registry/ships.json.js', "window['hull-ships-registry:" + org + "'](" + JSON.stringify(registry) + ");");
           done();
         }, function() {
           done();
