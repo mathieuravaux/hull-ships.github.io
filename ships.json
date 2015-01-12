@@ -6,6 +6,7 @@
       "version": "0.1.0",
       "description": "A Wonderful instant win and signup experience for your users",
       "index": "index.liquid.html",
+      "fullpage": true,
       "settings": [
         {
           "name": "images",
@@ -121,6 +122,7 @@
       "version": "0.0.1",
       "description": "A Wonderful quiz for your users",
       "index": "index.liquid.html",
+      "fullpage": true,
       "settings": [
         {
           "name": "logo_image",
@@ -251,6 +253,7 @@
       "version": "0.0.0",
       "description": "A Very minimal Ship for hull.io",
       "index": "index.liquid.html",
+      "fullpage": true,
       "settings": [
         {
           "name": "background_color",
