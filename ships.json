@@ -291,6 +291,7 @@
     "url": "https://hull-ships.github.io/comments/manifest.json",
     "manifest": {
       "name": "comments",
+      "description": "Comments for your content",
       "version": "0.0.1",
       "index": "index.html",
       "locales": [
