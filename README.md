@@ -1,6 +1,8 @@
-# Hull Ships Gallery Repository
+# Hull Ships Gallery Utility
 
 This repository contains the list of Ships shown in the Ships Gallery for Hull.io
+
+*You need to be a member of the Hull Team to use this*
 
 ### Updating the gallery
 
@@ -8,4 +10,7 @@ This repository contains the list of Ships shown in the Ships Gallery for Hull.i
 - `cd hull-ships.github.io`
 - `git checkout develop`
 - `npm install grunt`
-- `grunt build`
+- `grunt deploy`
+
+This will fetch all public Ships from `https://github.com/hull-ships/`, write the list in the `registry` folder, and publish back to `master`
+

@@ -36,7 +36,7 @@ module.exports = function(grunt) {
         var manifestUrl = "https://" + org + ".github.io/" + repo.name + "/manifest.json";
         http.get(manifestUrl, function(res) {
           if (res.ok) {
-            console.warn(res.body.name, "-", res.body.version);
+            console.warn("Adding Ship : ", res.body.name, " – Version ", res.body.version);
             resolve({ url: manifestUrl, manifest: res.body });
           } else {
             resolve();
