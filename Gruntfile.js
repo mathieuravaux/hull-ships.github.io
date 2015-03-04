@@ -39,6 +39,7 @@ module.exports = function(grunt) {
             console.warn("Adding Ship : ", res.body.name, " – Version ", res.body.version);
             resolve({ url: manifestUrl, manifest: res.body });
           } else {
+            console.warn('Manifest not found for repo ', repo.name);
             resolve();
           }
         })
