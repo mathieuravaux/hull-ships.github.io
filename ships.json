@@ -69,5 +69,31 @@
       "settings": [],
       "resources": []
     }
+  },
+  {
+    "url": "https://hull-ships.github.io/hull-login/manifest.json",
+    "manifest": {
+      "name": "Hull Login",
+      "description": "Simple login buttons",
+      "version": "0.0.1",
+      "index": "ship.html",
+      "locales": [
+        "en"
+      ],
+      "deployment_settings": [
+        {
+          "name": "redirect_url",
+          "title": "Redirect URL",
+          "description": "Where to redirect when login has succeeded.",
+          "type": "string"
+        }
+      ],
+      "resources": [
+        {
+          "name": "profile_form",
+          "type": "form"
+        }
+      ]
+    }
   }
 ]
