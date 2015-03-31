@@ -1,10 +1,191 @@
 [
   {
+    "url": "https://hull-ships.github.io/hull-quiz/manifest.json",
+    "manifest": {
+      "name": "quiz",
+      "version": "0.0.1",
+      "description": "A Wonderful quiz for your users",
+      "index": "index.html",
+      "fullpage": true,
+      "picture": "picture.png",
+      "settings": [
+        {
+          "name": "logo_image",
+          "title": "logo image",
+          "type": "string",
+          "format": "image"
+        },
+        {
+          "name": "background_image",
+          "title": "Background image",
+          "type": "string",
+          "format": "image"
+        },
+        {
+          "name": "background_image_opacity",
+          "title": "Background image opacity",
+          "type": "string",
+          "default": ".8"
+        },
+        {
+          "name": "background_image_blur",
+          "title": "Background image blur",
+          "type": "string",
+          "default": "1"
+        },
+        {
+          "name": "background_color",
+          "title": "Background color",
+          "type": "string",
+          "format": "color",
+          "default": "#000000"
+        },
+        {
+          "name": "text_color",
+          "title": "text color",
+          "type": "string",
+          "format": "color",
+          "default": "#ffffff"
+        },
+        {
+          "name": "button_background_color",
+          "title": "Button background color",
+          "type": "string",
+          "format": "color",
+          "default": "#f39001"
+        },
+        {
+          "name": "button_text_color",
+          "title": "Button text color",
+          "type": "string",
+          "format": "color",
+          "default": "#ffffff"
+        },
+        {
+          "name": "display_pagination",
+          "title": "Display pagination",
+          "description": "Display pagination buttons",
+          "type": "boolean",
+          "default": false
+        },
+        {
+          "name": "sample_questions",
+          "title": "Sample Questions",
+          "description": "Only display a number of questions picked randomly",
+          "type": "number",
+          "format": "number",
+          "default": 0
+        },
+        {
+          "name": "sample_answers",
+          "title": "Sample answers",
+          "description": "Only display a number of answers picked randomly",
+          "type": "number",
+          "format": "number",
+          "default": 0
+        },
+        {
+          "name": "question_countdown",
+          "title": "Question countdown",
+          "description": "Maximum time to answer a question",
+          "type": "number",
+          "format": "number",
+          "default": 0
+        },
+        {
+          "name": "quiz_countdown",
+          "title": "Quiz countdown",
+          "description": "Maximum time to answer all questions",
+          "type": "number",
+          "format": "number",
+          "default": 0
+        }
+      ],
+      "resources": [
+        {
+          "name": "quiz",
+          "type": "quiz"
+        },
+        {
+          "name": "form",
+          "type": "form"
+        }
+      ],
+      "locales": [
+        "en"
+      ]
+    }
+  },
+  {
+    "url": "https://hull-ships.github.io/starter/manifest.json",
+    "manifest": {
+      "name": "hull-ship-starter",
+      "version": "0.0.0",
+      "description": "A Very minimal Ship for hull.io",
+      "index": "index.liquid.html",
+      "fullpage": true,
+      "settings": [
+        {
+          "name": "background_color",
+          "type": "string",
+          "title": "Background Color",
+          "format": "color",
+          "default": "#ffffff"
+        },
+        {
+          "name": "text_color",
+          "type": "string",
+          "title": "Text Color",
+          "format": "color",
+          "default": "#ff0000"
+        },
+        {
+          "name": "brand_image",
+          "type": "string",
+          "title": "Brand Image",
+          "format": "image"
+        }
+      ],
+      "resources": [
+        {
+          "name": "form",
+          "type": "form"
+        }
+      ],
+      "locales": [
+        "en"
+      ]
+    }
+  },
+  {
+    "url": "https://hull-ships.github.io/login-buttons/manifest.json",
+    "manifest": {
+      "name": "login-buttons",
+      "description": "Simple login buttons",
+      "version": "0.0.1",
+      "index": "index.html",
+      "locales": [
+        "en"
+      ],
+      "demoKeys": {
+        "orgUrl": "http://04ab8422.hullapp.dev",
+        "appId": "54f719695cc017945c000005"
+      },
+      "deployment_settings": [
+        {
+          "name": "redirect_url",
+          "title": "Redirect URL",
+          "description": "Where to redirect when login has succeeded.",
+          "type": "string"
+        }
+      ]
+    }
+  },
+  {
     "url": "https://hull-ships.github.io/hull-comments/manifest.json",
     "manifest": {
       "name": "Hull Comments",
       "description": "Hull Comments Ship",
-      "picture": "picture.png",
       "index": "ship.html",
       "version": "0.0.2",
       "locales": [
@@ -88,11 +269,142 @@
           "type": "string"
         }
       ],
+      "settings": [
+        {
+          "name": "appearance",
+          "title": "Appearance",
+          "type": "object",
+          "properties": {
+            "show_labels": {
+              "title": "Show Button Labels",
+              "description": "",
+              "type": "boolean",
+              "default": true
+            },
+            "social_only": {
+              "title": "Social Login only",
+              "description": "",
+              "type": "boolean",
+              "default": false
+            }
+          }
+        }
+      ],
       "resources": [
         {
           "name": "profile_form",
           "type": "form"
         }
+      ]
+    }
+  },
+  {
+    "url": "https://hull-ships.github.io/hull-sharing-buttons/manifest.json",
+    "manifest": {
+      "name": "Hull Sharing button",
+      "description": "Hull Sharing button",
+      "picture": "picture.png",
+      "index": "ship.html",
+      "version": "0.0.1",
+      "settings": [
+        {
+          "name": "sharing_buttons",
+          "title": "Sharing Buttons",
+          "type": "object",
+          "properties": {
+            "facebook": {
+              "title": "Facebook",
+              "description": "Show Facebook Button.",
+              "type": "boolean",
+              "default": true
+            },
+            "twitter": {
+              "title": "Twitter",
+              "description": "Show twitter Button.",
+              "type": "boolean",
+              "default": true
+            },
+            "google": {
+              "title": "Google",
+              "description": "Show google Button.",
+              "type": "boolean",
+              "default": true
+            },
+            "email": {
+              "title": "Email",
+              "description": "Show email Button.",
+              "type": "boolean",
+              "default": true
+            },
+            "linkedin": {
+              "title": "Linkedin",
+              "description": "Show linkedin Button.",
+              "type": "boolean",
+              "default": true
+            },
+            "whatsapp": {
+              "title": "Whatsapp (visible on mobile only)",
+              "description": "Show whatsapp Button.",
+              "type": "boolean",
+              "default": true
+            }
+          }
+        },
+        {
+          "name": "appearance",
+          "title": "Appearance",
+          "type": "object",
+          "properties": {
+            "show_labels": {
+              "title": "Show Labels",
+              "description": "Show text labels next to icon",
+              "type": "boolean",
+              "default": true
+            },
+            "layout": {
+              "title": "Layout",
+              "description": "",
+              "type": "string",
+              "enum": [
+                "vertical",
+                "horizontal"
+              ],
+              "enum_titles": [
+                "Vertical",
+                "Horizontal"
+              ],
+              "default": "horizontal"
+            },
+            "button_shape": {
+              "title": "Button Shape",
+              "description": "",
+              "type": "string",
+              "enum": [
+                "circle",
+                "rounded",
+                "square"
+              ],
+              "enum_titles": [
+                "Circle",
+                "Rounded",
+                "Square"
+              ],
+              "default": "square"
+            }
+          }
+        }
+      ]
+    }
+  },
+  {
+    "url": "https://hull-ships.github.io/hull-comments-count/manifest.json",
+    "manifest": {
+      "name": "Hull comments count",
+      "description": "Hull comments count",
+      "index": "ship.html",
+      "version": "0.0.1",
+      "locales": [
+        "en"
       ]
     }
   }
