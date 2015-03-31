@@ -2,7 +2,7 @@
   {
     "url": "https://hull-ships.github.io/hull-quiz/manifest.json",
     "manifest": {
-      "name": "quiz",
+      "name": "Hull Quiz",
       "version": "0.0.1",
       "description": "A Wonderful quiz for your users",
       "index": "index.html",
@@ -117,6 +117,62 @@
     }
   },
   {
+    "url": "https://hull-ships.github.io/hull-comments/manifest.json",
+    "manifest": {
+      "name": "Hull Comments",
+      "description": "Hull Comments Ship",
+      "picture": "picture.png",
+      "index": "ship.html",
+      "version": "0.0.2",
+      "locales": [
+        "en"
+      ],
+      "settings": [
+        {
+          "name": "allow_guest",
+          "title": "Allow Guest",
+          "description": "Allow guest user to post comments.",
+          "type": "boolean",
+          "default": false
+        },
+        {
+          "name": "redirect_url",
+          "title": "Redirect URL",
+          "description": "Where to redirect when login has succeeded.",
+          "type": "string"
+        },
+        {
+          "name": "background_color",
+          "title": "Background Color",
+          "default": "#ffffff",
+          "type": "string",
+          "format": "color"
+        },
+        {
+          "name": "text_color",
+          "title": "Main Text Color",
+          "default": "#3f4549",
+          "type": "string",
+          "format": "color"
+        },
+        {
+          "name": "light_color",
+          "title": "Secondary Text Color",
+          "default": "#7f929c",
+          "type": "string",
+          "format": "color"
+        },
+        {
+          "name": "link_color",
+          "title": "Link Color",
+          "default": "#288ce4",
+          "type": "string",
+          "format": "color"
+        }
+      ]
+    }
+  },
+  {
     "url": "https://hull-ships.github.io/hull-ship-boilerplate/manifest.json",
     "manifest": {
       "name": "Hull Ship Boilerplate",
@@ -129,6 +185,54 @@
       ],
       "settings": [],
       "resources": []
+    }
+  },
+  {
+    "url": "https://hull-ships.github.io/hull-login/manifest.json",
+    "manifest": {
+      "name": "Hull Login",
+      "description": "A social + email login modal",
+      "picture": "picture.png",
+      "version": "0.0.1",
+      "index": "ship.html",
+      "locales": [
+        "en"
+      ],
+      "deployment_settings": [
+        {
+          "name": "redirect_url",
+          "title": "Redirect URL",
+          "description": "Where to redirect when login has succeeded.",
+          "type": "string"
+        }
+      ],
+      "settings": [
+        {
+          "name": "appearance",
+          "title": "Appearance",
+          "type": "object",
+          "properties": {
+            "show_labels": {
+              "title": "Show Button Labels",
+              "description": "",
+              "type": "boolean",
+              "default": true
+            },
+            "social_only": {
+              "title": "Social Login only",
+              "description": "",
+              "type": "boolean",
+              "default": false
+            }
+          }
+        }
+      ],
+      "resources": [
+        {
+          "name": "profile_form",
+          "type": "form"
+        }
+      ]
     }
   },
   {
@@ -226,6 +330,19 @@
             }
           }
         }
+      ]
+    }
+  },
+  {
+    "url": "https://hull-ships.github.io/hull-comments-count/manifest.json",
+    "manifest": {
+      "name": "Hull Comments Count",
+      "description": "A simple comments counter",
+      "picture": "picture.png",
+      "index": "ship.html",
+      "version": "0.0.1",
+      "locales": [
+        "en"
       ]
     }
   }
