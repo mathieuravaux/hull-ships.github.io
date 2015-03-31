@@ -2,9 +2,9 @@
   {
     "url": "https://hull-ships.github.io/hull-quiz/manifest.json",
     "manifest": {
-      "name": "Hull Quiz",
+      "name": "Classic Quiz",
       "version": "0.0.1",
-      "description": "A Wonderful quiz for your users",
+      "description": "A Quiz game with scores",
       "index": "index.html",
       "fullpage": true,
       "picture": "picture.png",
@@ -119,8 +119,8 @@
   {
     "url": "https://hull-ships.github.io/hull-comments/manifest.json",
     "manifest": {
-      "name": "Hull Comments",
-      "description": "Hull Comments Ship",
+      "name": "Classic Comments",
+      "description": "A clean comments widget, with Social login, likes and upvotes",
       "picture": "picture.png",
       "index": "ship.html",
       "version": "0.0.2",
@@ -238,8 +238,8 @@
   {
     "url": "https://hull-ships.github.io/hull-sharing-buttons/manifest.json",
     "manifest": {
-      "name": "Hull Sharing button",
-      "description": "Hull Sharing button",
+      "name": "Sharing Buttons",
+      "description": "A set of social sharing buttons",
       "picture": "picture.png",
       "index": "ship.html",
       "version": "0.0.1",
