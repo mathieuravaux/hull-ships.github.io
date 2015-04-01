@@ -32,8 +32,8 @@ var http = require('superagent');
 gulp.task("default", ["server"]);
 gulp.task("serve",   ["server"]);
 
-gulp.task("server",  function(callback) {runSequence("clean", "copy-files:watch", "registry", "webpack:server", callback); });
-gulp.task("build",   function(callback) {runSequence("clean", "copy-files", "registry", "webpack:build", callback); });
+gulp.task("server",  function(callback) {runSequence("clean", "copy-files:watch", "webpack:server", callback); });
+gulp.task("build",   function(callback) {runSequence("clean", "copy-files", "webpack:build", callback); });
 gulp.task("deploy",  function(callback) {runSequence("build", "gh:deploy", callback); });
 
 
@@ -168,7 +168,7 @@ gulp.task("webpack:server", function() {
 
 
 
-gulp.task("registry",function(done){
+gulp.task("registry", function(done){
   var org = config.org;
   var repos = ["orgs", org, "repos"].join("/");
   var ships = [];

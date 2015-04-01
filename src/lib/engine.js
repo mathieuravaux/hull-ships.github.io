@@ -82,7 +82,7 @@ var Dispatcher = {
   removeChangeListener: function(listener) {this.removeListener(CHANGE_EVENT, listener);},
   emitChange: function(message) {this.emit(CHANGE_EVENT, message); },
   fetchShips: function(){
-    http.get('/registry/ships.json', (err, res)=> {
+    http.get('/ships.json', (err, res)=> {
       if (res && res.ok) {
         this._ships=res.body;
         this.emitChange();
