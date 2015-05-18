@@ -199,7 +199,7 @@
     "url": "https://hull-ships.github.io/hull-login/manifest.json",
     "manifest": {
       "name": "Hull Login",
-      "description": "A social + email login modal",
+      "description": "A simple login overlay",
       "picture": "picture.png",
       "version": "0.0.1",
       "index": "ship.html",
@@ -216,23 +216,69 @@
       ],
       "settings": [
         {
-          "name": "appearance",
-          "title": "Appearance",
-          "type": "object",
-          "properties": {
-            "show_labels": {
-              "title": "Show Button Labels",
-              "description": "",
-              "type": "boolean",
-              "default": true
-            },
-            "social_only": {
-              "title": "Social Login only",
-              "description": "",
-              "type": "boolean",
-              "default": false
-            }
-          }
+          "name": "logo_image",
+          "title": "logo image",
+          "type": "string",
+          "format": "image"
+        },
+        {
+          "name": "primary_color",
+          "title": "Primary color",
+          "type": "string",
+          "format": "color",
+          "default": "#fa5400"
+        },
+        {
+          "name": "text_color",
+          "title": "Text color",
+          "type": "string",
+          "format": "color",
+          "default": "#aaaaaa"
+        },
+        {
+          "name": "link_color",
+          "title": "Link color",
+          "type": "string",
+          "format": "color",
+          "default": "#aaaaaa"
+        },
+        {
+          "name": "button_border_radius",
+          "title": "Button border radius",
+          "type": "number",
+          "format": "range",
+          "default": 3,
+          "minimum": 0,
+          "maximun": 100
+        },
+        {
+          "name": "overlay_border_radius",
+          "title": "Overlay border radius",
+          "type": "number",
+          "format": "range",
+          "default": 6,
+          "minimum": 0,
+          "maximun": 100
+        },
+        {
+          "name": "show_classic_login",
+          "title": "Show classic login form",
+          "type": "boolean",
+          "default": true
+        },
+        {
+          "name": "show_sign_up_section_after",
+          "title": "Show sign up section",
+          "type": "number",
+          "minimum": 0,
+          "default": 2000
+        },
+        {
+          "name": "hide_thanks_section_after",
+          "title": "Hide thanks section",
+          "type": "number",
+          "minimum": 0,
+          "default": 2000
         }
       ],
       "resources": [
@@ -259,37 +305,31 @@
           "properties": {
             "facebook": {
               "title": "Facebook",
-              "description": "Show Facebook Button.",
               "type": "boolean",
               "default": true
             },
             "twitter": {
               "title": "Twitter",
-              "description": "Show twitter Button.",
               "type": "boolean",
               "default": true
             },
             "google": {
               "title": "Google",
-              "description": "Show google Button.",
               "type": "boolean",
               "default": true
             },
             "email": {
               "title": "Email",
-              "description": "Show email Button.",
               "type": "boolean",
               "default": true
             },
             "linkedin": {
               "title": "Linkedin",
-              "description": "Show linkedin Button.",
               "type": "boolean",
               "default": true
             },
             "whatsapp": {
               "title": "Whatsapp (visible on mobile only)",
-              "description": "Show whatsapp Button.",
               "type": "boolean",
               "default": true
             }
