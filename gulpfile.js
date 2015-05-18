@@ -79,8 +79,9 @@ var handleError = function(err, taskName){
 
 // Setup a Ngrok server
 var ngrokServe = function(subdomain){
-  var options = { port: config.serverPort };
   var env = process.env;
+  if (!env.NGROK_AUTHTOKEN) return false;
+  var options = { port: config.serverPort };
   if (env.NGROK_AUTHTOKEN) {
     options.authtoken = env.NGROK_AUTHTOKEN;
   }
