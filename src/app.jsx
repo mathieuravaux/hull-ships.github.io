@@ -21,7 +21,7 @@ var Ship = React.createClass({
     var description = this.props.manifest.description;
     var name = this.props.manifest.name;
     return (
-      <div className="col-sm-3">  
+      <div className="col-sm-3">
           <div className="panel container-fluid">
             <a href={url}><img className="img-responsive" src={img}/></a>
             <div className="panel-body" style={{minHeight:100}}>
@@ -46,7 +46,7 @@ var CTAButton = React.createClass({
     return <div>
       <p className="text-center">
         Welcome back, {this.props.user.name}
-        <a className="btn btn-lg btn-rounded btn-success btn-block" href="http://dashboard.hullapp.io">Go to your dashboard</a>
+        <a className="btn btn-lg btn-rounded btn-success btn-block" target="_blank" href="http://dashboard.hullapp.io">Go to your dashboard</a>
         <small><a href="#" onClick={this.props.actions.logout}>Logout</a></small>
       </p>
     </div>
