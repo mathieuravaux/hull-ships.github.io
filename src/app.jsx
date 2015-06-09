@@ -21,7 +21,7 @@ var Ship = React.createClass({
     var description = this.props.manifest.description;
     var name = this.props.manifest.name;
     return (
-      <div className="col-sm-3">
+      <div className="col-md-3 col-sm-4" style={{display:'flex'}}>
           <div className="panel container-fluid">
             <a href={url}><img className="img-responsive" src={img}/></a>
             <div className="panel-body" style={{minHeight:100}}>
@@ -91,7 +91,7 @@ var App = React.createClass({
     });
     return (
       <div className="container">
-        <div className='row'>{ships}</div>
+        <div className='' style={{display:'flex', flexWrap:'wrap'}}>{ships}</div>
         <div className='row'><CTAButton {...this.state} actions={this.props.engine.getActions()}/></div>
       </div>
     )
