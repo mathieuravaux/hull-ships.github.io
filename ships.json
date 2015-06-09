@@ -658,7 +658,29 @@
       "locales": [
         "en"
       ],
+      "deployment_settings": [
+        {
+          "name": "_selector",
+          "default": "body",
+          "type": "string",
+          "format": "string"
+        },
+        {
+          "name": "_placement",
+          "default": "append",
+          "type": "string",
+          "format": "string"
+        }
+      ],
       "settings": [
+        {
+          "name": "selector",
+          "title": "Popover target",
+          "description": "A CSS selector that defines which elements will show a popopver when selected",
+          "default": "p, blockquote",
+          "type": "string",
+          "format": "textarea"
+        },
         {
           "name": "popover_color",
           "title": "Popover Color",
@@ -675,7 +697,7 @@
         },
         {
           "name": "margin",
-          "title": "Button size",
+          "title": "Buttons size",
           "type": "number",
           "format": "range",
           "default": 10,
