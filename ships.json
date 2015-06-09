@@ -280,8 +280,8 @@
   {
     "url": "https://hull-ships.github.io/hull-login/manifest.json",
     "manifest": {
-      "name": "Hull Login",
-      "description": "A simple login overlay",
+      "name": "Login",
+      "description": "A complete user registration and social login modal",
       "picture": "picture.png",
       "version": "0.0.1",
       "index": "ship.html",
@@ -548,7 +548,7 @@
         },
         {
           "name": "logo",
-          "title": "Background Image",
+          "title": "Logo",
           "format": "image",
           "type": "string"
         },
@@ -626,7 +626,7 @@
           "format": "range",
           "maximum": 1,
           "minimum": 0,
-          "default": 0,
+          "default": 0.8,
           "multipleOf": 0.1,
           "type": "number"
         },
@@ -739,6 +739,43 @@
           "name": "site_id",
           "title": "Olark Site ID",
           "description": "Olark Code, found in Settings > Installation",
+          "type": "string",
+          "format": "text"
+        }
+      ],
+      "resources": []
+    }
+  },
+  {
+    "url": "https://hull-ships.github.io/hull-segment/manifest.json",
+    "manifest": {
+      "name": "Segment",
+      "description": "Install Segment in your site",
+      "picture": "picture.png",
+      "index": "ship.js",
+      "version": "0.0.1",
+      "locales": [
+        "en"
+      ],
+      "deployment_settings": [
+        {
+          "name": "_selector",
+          "default": "body",
+          "type": "string",
+          "format": "string"
+        },
+        {
+          "name": "_placement",
+          "default": "append",
+          "type": "string",
+          "format": "string"
+        }
+      ],
+      "settings": [
+        {
+          "name": "project_id",
+          "title": "Segment ID",
+          "description": "Segment Code, found in Project Settings > API Keys",
           "type": "string",
           "format": "text"
         }
