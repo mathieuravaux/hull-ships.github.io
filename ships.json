@@ -562,6 +562,13 @@
           "name": "background_color",
           "title": "Background Color",
           "format": "color",
+          "default": "#0173E3",
+          "type": "string"
+        },
+        {
+          "name": "link_color",
+          "title": "Link Color",
+          "format": "color",
           "default": "#FFFFFF",
           "type": "string"
         },
@@ -579,7 +586,7 @@
           "name": "button_background_color",
           "title": "Button Color",
           "format": "color",
-          "default": "#ebaa00",
+          "default": "#2C4159",
           "type": "string"
         },
         {
@@ -638,6 +645,46 @@
       "locales": [
         "en"
       ]
+    }
+  },
+  {
+    "url": "https://hull-ships.github.io/hull-share-selection/manifest.json",
+    "manifest": {
+      "name": "Share Selection",
+      "description": "Shows a floating share popup when selecting text content",
+      "picture": "picture.png",
+      "index": "ship.html",
+      "version": "0.0.1",
+      "locales": [
+        "en"
+      ],
+      "settings": [
+        {
+          "name": "popover_color",
+          "title": "Popover Color",
+          "default": "#363C3F",
+          "type": "string",
+          "format": "color"
+        },
+        {
+          "name": "button_color",
+          "title": "Button Color",
+          "default": "#fff",
+          "type": "string",
+          "format": "color"
+        },
+        {
+          "name": "margin",
+          "title": "Button size",
+          "type": "number",
+          "format": "range",
+          "default": 10,
+          "maximum": 30,
+          "minimum": 5,
+          "multipleOf": 1
+        }
+      ],
+      "resources": []
     }
   },
   {
