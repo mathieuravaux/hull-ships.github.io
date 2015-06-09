@@ -6,7 +6,6 @@
       "version": "0.0.1",
       "description": "A Quiz game with scores",
       "index": "ship.html",
-      "fullpage": true,
       "picture": "picture.png",
       "settings": [
         {
@@ -14,6 +13,14 @@
           "title": "logo image",
           "type": "string",
           "format": "image"
+        },
+        {
+          "name": "logo_max_height",
+          "title": "Max height for logo",
+          "description": "Maximum height for your logo",
+          "type": "number",
+          "format": "number",
+          "default": 150
         },
         {
           "name": "background_image",
@@ -77,6 +84,21 @@
           "default": false
         },
         {
+          "name": "questions_images_max_height",
+          "title": "Max height for question images",
+          "description": "Maximum height for your questions images (in pixels)",
+          "type": "number",
+          "format": "number",
+          "default": 500
+        },
+        {
+          "name": "can_replay",
+          "title": "User can play multiple times",
+          "description": "Let the user play the quiz multiple times",
+          "type": "boolean",
+          "default": false
+        },
+        {
           "name": "sample_questions",
           "title": "Sample Questions",
           "description": "Only display a number of questions picked randomly",
@@ -107,6 +129,66 @@
           "type": "number",
           "format": "number",
           "default": 0
+        },
+        {
+          "name": "sharing",
+          "title": "Sharing Options",
+          "type": "object",
+          "properties": {
+            "url": {
+              "type": "string",
+              "format": "uri",
+              "title": "Share URL",
+              "description": "URL to share"
+            },
+            "facebook": {
+              "type": "object",
+              "title": "Facebook",
+              "properties": {
+                "display": {
+                  "type": "boolean",
+                  "default": true,
+                  "title": "Display Facebook share button"
+                },
+                "button_text": {
+                  "type": "string",
+                  "default": "Share on Facebook",
+                  "title": "Button Text"
+                }
+              }
+            },
+            "twitter": {
+              "type": "object",
+              "title": "Twitter",
+              "properties": {
+                "display": {
+                  "type": "boolean",
+                  "default": true,
+                  "title": "Display Twitter share button"
+                },
+                "button_text": {
+                  "type": "string",
+                  "default": "Share on Twitter",
+                  "title": "Button text"
+                },
+                "text": {
+                  "type": "string",
+                  "title": "Default tweet",
+                  "maxLength": 118
+                },
+                "hashtags": {
+                  "type": "string",
+                  "title": "Hashtags",
+                  "description": "Allow easy discovery of Tweets by topic by including a comma-separated list of hashtag values without the preceding # character."
+                },
+                "via": {
+                  "type": "string",
+                  "title": "Via",
+                  "description": "A Twitter username to associate with the Tweet, such as your site’s Twitter account. The provided username will be appended to the end of the Tweet with the text 'via @username'."
+                }
+              }
+            }
+          }
         }
       ],
       "resources": [
@@ -392,6 +474,207 @@
       "locales": [
         "en"
       ]
+    }
+  },
+  {
+    "url": "https://hull-ships.github.io/hull-tracking/manifest.json",
+    "manifest": {
+      "name": "Tracking Ship",
+      "description": "A super small ship to add Click Tracking with user-defined selectors",
+      "picture": "picture.png",
+      "index": "ship.js",
+      "version": "0.0.1",
+      "locales": [
+        "en"
+      ],
+      "settings": [
+        {
+          "name": "tracked_links",
+          "title": "Tracked links",
+          "type": "array",
+          "format": "table",
+          "items": {
+            "type": "object",
+            "properties": {
+              "selector": {
+                "type": "string",
+                "title": "DOM Selector"
+              },
+              "event_name": {
+                "type": "string",
+                "title": "Event Name"
+              }
+            }
+          },
+          "default": [
+            {
+              "selector": "a[target]",
+              "event_name": "Click Link to external web page"
+            }
+          ]
+        }
+      ],
+      "resources": []
+    }
+  },
+  {
+    "url": "https://hull-ships.github.io/hull-landing-page/manifest.json",
+    "manifest": {
+      "name": "Landing Page Ship",
+      "description": "Displays a landing page with customizable Background, content, call to action and a row of Images",
+      "picture": "picture.png",
+      "index": "ship.html",
+      "version": "0.0.2",
+      "deployment_settings": [
+        {
+          "name": "_selector",
+          "default": "body",
+          "type": "string",
+          "format": "string"
+        },
+        {
+          "name": "_placement",
+          "default": "append",
+          "type": "string",
+          "format": "string"
+        }
+      ],
+      "settings": [
+        {
+          "name": "cta_link",
+          "title": "Call to action link",
+          "format": "string",
+          "type": "string"
+        },
+        {
+          "name": "logo",
+          "title": "Background Image",
+          "format": "image",
+          "type": "string"
+        },
+        {
+          "name": "background_image",
+          "title": "Background Image",
+          "format": "image",
+          "type": "string"
+        },
+        {
+          "name": "background_color",
+          "title": "Background Color",
+          "format": "color",
+          "default": "#FFFFFF",
+          "type": "string"
+        },
+        {
+          "name": "button_border_radius",
+          "title": "Button Radius",
+          "format": "range",
+          "maximum": 100,
+          "minimum": 0,
+          "default": 0,
+          "multipleOf": 1,
+          "type": "number"
+        },
+        {
+          "name": "button_background_color",
+          "title": "Button Color",
+          "format": "color",
+          "default": "#ebaa00",
+          "type": "string"
+        },
+        {
+          "name": "button_text_color",
+          "title": "Button Text Color",
+          "format": "color",
+          "default": "#FFFFFF",
+          "type": "string"
+        },
+        {
+          "name": "text_color",
+          "title": "Text color",
+          "format": "color",
+          "default": "#FFFFFF",
+          "type": "string"
+        },
+        {
+          "name": "title_color",
+          "title": "Title color",
+          "format": "color",
+          "default": "#FFFFFF",
+          "type": "string"
+        },
+        {
+          "name": "background_blur",
+          "title": "Background Blur",
+          "format": "range",
+          "maximum": 50,
+          "minimum": 0,
+          "default": 0,
+          "multipleOf": 1,
+          "type": "number"
+        },
+        {
+          "name": "background_opacity",
+          "title": "Background opacity",
+          "format": "range",
+          "maximum": 1,
+          "minimum": 0,
+          "default": 0,
+          "multipleOf": 0.1,
+          "type": "number"
+        },
+        {
+          "name": "images",
+          "title": "Content Images",
+          "type": "array",
+          "format": "table",
+          "items": {
+            "format": "image",
+            "type": "string"
+          }
+        }
+      ],
+      "resources": [],
+      "locales": [
+        "en"
+      ]
+    }
+  },
+  {
+    "url": "https://hull-ships.github.io/hull-olark/manifest.json",
+    "manifest": {
+      "name": "Olark",
+      "description": "Install Olark in your site",
+      "picture": "picture.png",
+      "index": "ship.js",
+      "version": "0.0.1",
+      "locales": [
+        "en"
+      ],
+      "deployment_settings": [
+        {
+          "name": "_selector",
+          "default": "body",
+          "type": "string",
+          "format": "string"
+        },
+        {
+          "name": "_placement",
+          "default": "append",
+          "type": "string",
+          "format": "string"
+        }
+      ],
+      "settings": [
+        {
+          "name": "site_id",
+          "title": "Olark Site ID",
+          "description": "Olark Code, found in Settings > Installation",
+          "type": "string",
+          "format": "text"
+        }
+      ],
+      "resources": []
     }
   }
 ]
