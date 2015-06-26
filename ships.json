@@ -283,19 +283,8 @@
       "name": "Login",
       "description": "A complete user registration and social login modal",
       "picture": "picture.png",
+      "index": "ship.js",
       "version": "0.0.1",
-      "index": "ship.html",
-      "locales": [
-        "en"
-      ],
-      "deployment_settings": [
-        {
-          "name": "redirect_url",
-          "title": "Redirect URL",
-          "description": "Where to redirect when login has succeeded.",
-          "type": "string"
-        }
-      ],
       "settings": [
         {
           "name": "logo_image",
@@ -343,24 +332,100 @@
           "maximun": 100
         },
         {
+          "name": "reset_styles",
+          "title": "Reset styles",
+          "description": "Isolate ship design from rest of the page by resetting everything inside it",
+          "type": "boolean",
+          "default": true
+        },
+        {
+          "name": "show_login",
+          "title": "Display Login",
+          "description": "When logged out, display a Login button",
+          "type": "boolean",
+          "default": true
+        },
+        {
+          "name": "show_signup",
+          "title": "Display Signup",
+          "description": "When logged out, display a Signup button",
+          "type": "boolean",
+          "default": true
+        },
+        {
+          "name": "show_profile",
+          "title": "Display User profile button",
+          "description": "When logged in, show a button to display user profile",
+          "type": "boolean",
+          "default": true
+        },
+        {
           "name": "show_classic_login",
-          "title": "Show classic login form",
+          "title": "Email + password registration",
+          "description": "Show email + password fields for user registration",
           "type": "boolean",
           "default": true
         },
         {
           "name": "show_sign_up_section_after",
-          "title": "Show sign up section",
+          "title": "Show sign up section delay",
+          "description": "Wait time before showing signup section in seconds (0 to disable)",
           "type": "number",
+          "format": "number",
           "minimum": 0,
-          "default": 2000
+          "default": 2
         },
         {
           "name": "hide_thanks_section_after",
-          "title": "Hide thanks section",
+          "title": "Hide thanks section delay",
+          "description": "Wait time before hiding thanks section in seconds (0 to disable)",
           "type": "number",
-          "minimum": 0,
-          "default": 2000
+          "format": "number",
+          "default": 2
+        },
+        {
+          "name": "custom_buttons",
+          "title": "Custom buttons",
+          "description": "Show custom buttons only when logged in",
+          "type": "array",
+          "format": "table",
+          "items": {
+            "type": "object",
+            "properties": {
+              "text": {
+                "type": "string",
+                "title": "Link Name"
+              },
+              "url": {
+                "type": "string",
+                "title": "Link URL",
+                "format": "uri"
+              },
+              "popup": {
+                "type": "boolean",
+                "title": "New Window?"
+              }
+            },
+            "required": [
+              "text",
+              "url"
+            ]
+          },
+          "default": [
+            {
+              "text": "Account",
+              "url": "/account",
+              "popup": true
+            }
+          ]
+        }
+      ],
+      "deployment_settings": [
+        {
+          "name": "redirect_url",
+          "title": "Redirect URL",
+          "description": "Where to redirect when login has succeeded.",
+          "type": "string"
         }
       ],
       "resources": [
@@ -368,6 +433,9 @@
           "name": "profile_form",
           "type": "form"
         }
+      ],
+      "locales": [
+        "en"
       ]
     }
   },
@@ -778,6 +846,178 @@
           "description": "Segment Code, found in Project Settings > API Keys",
           "type": "string",
           "format": "text"
+        }
+      ],
+      "resources": []
+    }
+  },
+  {
+    "url": "https://hull-ships.github.io/hull-message-bar/manifest.json",
+    "manifest": {
+      "name": "Message Bar",
+      "description": "Show a Message bar on top of your site",
+      "picture": "picture.png",
+      "index": "ship.js",
+      "version": "0.0.1",
+      "locales": [
+        "en"
+      ],
+      "deployment_settings": [
+        {
+          "name": "_selector",
+          "default": "body",
+          "type": "string",
+          "format": "string"
+        },
+        {
+          "name": "_placement",
+          "default": "append",
+          "type": "string",
+          "format": "string"
+        },
+        {
+          "name": "whitelist",
+          "title": "Filter URLs",
+          "description": "Display bar only on these URLs",
+          "type": "array",
+          "format": "table",
+          "items": {
+            "type": "string",
+            "format": "text",
+            "title": "URL"
+          }
+        },
+        {
+          "name": "referrers",
+          "title": "Referrers",
+          "description": "Display bar only when customer comes from these sites (Regex accepted)",
+          "type": "array",
+          "format": "table",
+          "items": {
+            "type": "string",
+            "format": "text",
+            "title": "URL"
+          }
+        }
+      ],
+      "settings": [
+        {
+          "name": "appearance",
+          "type": "object",
+          "properties": {
+            "background_color": {
+              "title": "Background",
+              "type": "string",
+              "format": "color",
+              "default": "#0093e6"
+            },
+            "text_color": {
+              "title": "Text",
+              "type": "string",
+              "format": "color",
+              "default": "#FFFFFF"
+            },
+            "button_color": {
+              "title": "Button",
+              "type": "string",
+              "format": "color",
+              "default": "#FFFFFF"
+            },
+            "button_text_color": {
+              "title": "Button Text",
+              "type": "string",
+              "format": "color",
+              "default": "#0093e6"
+            },
+            "opacity": {
+              "title": "Opacity",
+              "type": "number",
+              "format": "range",
+              "default": 1,
+              "maximum": 1,
+              "minimum": 0,
+              "multipleOf": 0.05
+            },
+            "font_family": {
+              "title": "Font Family",
+              "type": "string",
+              "enum": [
+                "Open Sans",
+                "Helvetica",
+                "Georgia",
+                "sans-serif"
+              ],
+              "default": "Helvetica"
+            },
+            "animation": {
+              "title": "Appear Animation",
+              "type": "string",
+              "enum": [
+                "fade",
+                "fade_down",
+                "bounce",
+                "none"
+              ],
+              "default": "fade_down"
+            }
+          }
+        },
+        {
+          "name": "content",
+          "title": "Content",
+          "type": "object",
+          "properties": {
+            "link_url": {
+              "title": "Link URL",
+              "type": "string",
+              "format": "text"
+            },
+            "new_window": {
+              "title": "Open link in new window",
+              "type": "boolean",
+              "default": true
+            }
+          }
+        },
+        {
+          "name": "behaviour",
+          "title": "Behaviour",
+          "type": "object",
+          "properties": {
+            "allow_hide": {
+              "title": "Allow to hide bar",
+              "type": "boolean",
+              "default": false
+            },
+            "pushes_down": {
+              "title": "Push Page down",
+              "type": "boolean",
+              "default": false
+            },
+            "fixed_position": {
+              "title": "Remains in place",
+              "type": "boolean",
+              "default": true
+            },
+            "placement": {
+              "title": "Placement",
+              "type": "string",
+              "enum": [
+                "top",
+                "bottom"
+              ],
+              "default": "top"
+            },
+            "delay": {
+              "title": "Display Delay (in seconds)",
+              "type": "number",
+              "format": "range",
+              "default": 0,
+              "maximum": 60,
+              "minimum": 0,
+              "multipleOf": 2
+            }
+          }
         }
       ],
       "resources": []
