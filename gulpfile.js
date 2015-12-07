@@ -172,7 +172,7 @@ gulp.task("webpack:server", function() {
 gulp.task("registry",function(done){
   var org = config.org;
   var repos = ["orgs", org, "repos"].join("/");
-  var ships = [];
+  var shipsList = require('./ships.json');
 
   function string_src(filename, string) {
     var src = require('stream').Readable({ objectMode: true })
@@ -183,20 +183,20 @@ gulp.task("registry",function(done){
     return src
   }
 
-  function getShipManifest(repo) {
+  function getShipManifest(repoName) {
     return new Promise(function(resolve, reject) {
-      var manifestUrl = "https://" + org + ".github.io/" + repo.name + "/manifest.json";
+      var manifestUrl = "https://" + org + ".github.io/" + repoName + "/manifest.json";
       // Skip if repo doesnt start with 'hull-' (Basic public/private convention)
-      if(repo.name.indexOf('hull-')!=0){ return resolve(); }
+      if(repoName.indexOf('hull-')!=0){ return resolve(); }
       http.get(manifestUrl, function(err, res) {
         if (res && res.ok) {
           if(res.body.picture && res.body.picture.length){
             // Skip if repo doesnt have a picture (mandatory)
             resolve({ url: manifestUrl, manifest: res.body });
-            console.warn("Adding Ship : ", res.body.name, " – Version ", res.body.version, repo.name);
+            console.warn("Adding Ship : ", res.body.name, " – Version ", res.body.version, repoName);
           } else {
             resolve();
-            console.warn("Skipping Ship : ", res.body.name, " – No Picture found", repo.name);
+            console.warn("Skipping Ship : ", res.body.name, " – No Picture found", repoName);
           }
         } else {
           resolve();
@@ -205,28 +205,21 @@ gulp.task("registry",function(done){
     })
   }
 
-  github.get(repos, function(err, status, body, headers) {
-    if (err) {
-      console.log("Error while building registry", err);
-      done();
-    } else {
-      body.map(function(repo) {
-        ships.push(getShipManifest(repo));
-      });
-      Promise.all(ships).then(function(manifests) {
-        var registry = [];
-        manifests.map(function(m) { if (m) registry.push(m); });
 
-        string_src('ships.json',JSON.stringify(registry, " ", 2))
-          .pipe(gulp.dest(path.join(process.cwd(), config.outputFolder)));
+  var ships = shipsList.map(getShipManifest);
 
-        string_src('ships.json.js',"window['hull-ships-registry:" + org + "'](" + JSON.stringify(registry) + ");")
-          .pipe(gulp.dest(path.join(process.cwd(), config.outputFolder)));
+  Promise.all(ships).then(function(manifests) {
+    var registry = [];
+    manifests.map(function(m) { if (m) registry.push(m); });
 
-        done();
-      }, function() { done(); });
-    }
-  });
+    string_src('ships.json',JSON.stringify(registry, " ", 2))
+      .pipe(gulp.dest(path.join(process.cwd(), config.outputFolder)));
+
+    string_src('ships.json.js',"window['hull-ships-registry:" + org + "'](" + JSON.stringify(registry) + ");")
+      .pipe(gulp.dest(path.join(process.cwd(), config.outputFolder)));
+
+    done();
+  }, function() { done(); });
 
 });
 
