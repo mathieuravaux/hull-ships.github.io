@@ -212,7 +212,7 @@
       "name": "Comments",
       "description": "A clean comments widget, with Social login, likes and upvotes",
       "picture": "picture.png",
-      "index": "ship.html",
+      "index": "ship.js",
       "version": "0.0.2",
       "locales": [
         "en"
@@ -241,14 +241,14 @@
         {
           "name": "text_color",
           "title": "Main Text Color",
-          "default": "#3f4549",
+          "default": "#7F929C",
           "type": "string",
           "format": "color"
         },
         {
           "name": "light_color",
           "title": "Secondary Text Color",
-          "default": "#7f929c",
+          "default": "#BAC3CA",
           "type": "string",
           "format": "color"
         },
@@ -268,12 +268,20 @@
       "name": "Hull Ship Boilerplate",
       "description": "Hull Ship Boilerplate",
       "picture": "picture.png",
-      "index": "ship.html",
+      "index": "ship.js",
       "version": "0.0.2",
       "locales": [
         "en"
       ],
-      "settings": [],
+      "settings": [
+        {
+          "name": "primary_color",
+          "title": "Primary color",
+          "type": "string",
+          "format": "color",
+          "default": "#0093E6"
+        }
+      ],
       "resources": []
     }
   },
@@ -298,46 +306,44 @@
           "title": "Primary color",
           "type": "string",
           "format": "color",
-          "default": "#fa5400"
+          "default": "#0093E6"
         },
         {
           "name": "text_color",
           "title": "Text color",
           "type": "string",
           "format": "color",
-          "default": "#aaaaaa"
+          "default": "#8091AD"
         },
         {
           "name": "link_color",
           "title": "Link color",
           "type": "string",
           "format": "color",
-          "default": "#aaaaaa"
+          "default": "#3F4654"
         },
         {
-          "name": "button_border_radius",
-          "title": "Button border radius",
-          "type": "number",
-          "format": "range",
-          "default": 3,
-          "minimum": 0,
-          "maximun": 100
+          "name": "background_color",
+          "title": "Background color",
+          "type": "string",
+          "format": "color",
+          "default": "#ffffff"
         },
         {
           "name": "overlay_border_radius",
-          "title": "Overlay border radius",
+          "title": "Border radius",
           "type": "number",
           "format": "range",
           "default": 6,
           "minimum": 0,
-          "maximun": 100
+          "maximum": 20
         },
         {
-          "name": "reset_styles",
-          "title": "Reset styles",
-          "description": "Isolate ship design from rest of the page by resetting the CSS styles within. Uncheck this if you want to style the ship yourself.",
+          "name": "show_inline",
+          "title": "Show inline",
+          "description": "Show login and signup forms in page instead of as a Modal",
           "type": "boolean",
-          "default": true
+          "default": false
         },
         {
           "name": "show_classic_login",
@@ -348,8 +354,15 @@
         },
         {
           "name": "show_classic_login_as_button",
-          "title": "Show email registration as button",
-          "description": "Make email registration appear as a button just like social login. Clicking this button will expand the traditional sign-up form.",
+          "title": "Expand Email form by default",
+          "description": "When checked, the email registration form appears inline. Otherwise, it shows a button to expand it",
+          "type": "boolean",
+          "default": true
+        },
+        {
+          "name": "split_name_field",
+          "title": "Split name in two fields",
+          "description": "Split the name field in two fields (first name & last name).",
           "type": "boolean",
           "default": false
         },
@@ -358,45 +371,57 @@
           "title": "Visually disable submit buttons for incomplete forms",
           "description": "If checked, disable the 'log in' and 'sign up' buttons when their forms are incomplete. Incomplete submissions will not be allowed regardless of the state of this option.",
           "type": "boolean",
-          "default": false
+          "default": true,
+          "format": "hidden"
+        },
+        {
+          "name": "show_name_field_on_sign_up",
+          "title": "Show name field on sign up",
+          "description": "If checked, show a field that asks the user for his name.",
+          "type": "boolean",
+          "default": true,
+          "format": "hidden"
         },
         {
           "name": "show_sign_up_section_after",
-          "title": "Show sign up section delay",
+          "title": "Automatic Sign up popup delay",
           "description": "This is the wait time (in seconds) before automatically showing the sign-up section to unregistered visitors (once per user). 0 seconds disables the pop-up.",
           "type": "number",
           "format": "number",
           "minimum": 0,
-          "default": 2
+          "default": 0
         },
         {
           "name": "hide_thanks_section_after",
-          "title": "Hide thanks section delay",
+          "title": "Automatically Hide thanks section delay",
           "description": "This is the wait time (in seconds) before automatically hiding the thanks section (i.e. 'thanks for signing up!') once users finish registration (0 to disable).",
           "type": "number",
-          "format": "number",
-          "default": 2
+          "format": "hidden",
+          "default": 0
         },
         {
           "name": "show_login",
           "title": "Display log in link",
           "description": "When logged out, show a 'log in' link.",
           "type": "boolean",
-          "default": true
+          "default": false,
+          "format": "hidden"
         },
         {
           "name": "show_signup",
           "title": "Display sign up link",
           "description": "When logged out, show a 'sign up' link.",
           "type": "boolean",
-          "default": true
+          "default": false,
+          "format": "hidden"
         },
         {
           "name": "show_profile",
           "title": "Display user profile link",
           "description": "When logged in, show a link to view and edit their profile.",
           "type": "boolean",
-          "default": true
+          "default": false,
+          "format": "hidden"
         },
         {
           "name": "custom_styles",
@@ -404,42 +429,6 @@
           "description": "Custom CSS to fine-tune Styles.",
           "type": "string",
           "format": "textarea"
-        },
-        {
-          "name": "custom_buttons",
-          "title": "Custom links",
-          "description": "Add custom links to show when a user is logged in.",
-          "type": "array",
-          "format": "table",
-          "items": {
-            "type": "object",
-            "properties": {
-              "text": {
-                "type": "string",
-                "title": "Link Name"
-              },
-              "url": {
-                "type": "string",
-                "title": "Link URL",
-                "format": "uri"
-              },
-              "popup": {
-                "type": "boolean",
-                "title": "New Window?"
-              }
-            },
-            "required": [
-              "text",
-              "url"
-            ]
-          },
-          "default": [
-            {
-              "text": "Account",
-              "url": "/account",
-              "popup": true
-            }
-          ]
         }
       ],
       "deployment_settings": [
@@ -450,12 +439,7 @@
           "type": "string"
         }
       ],
-      "resources": [
-        {
-          "name": "profile_form",
-          "type": "form"
-        }
-      ],
+      "resources": [],
       "locales": [
         "en"
       ]
@@ -512,11 +496,32 @@
           "title": "Appearance",
           "type": "object",
           "properties": {
-            "show_labels": {
-              "title": "Show Labels",
-              "description": "Show text labels next to icon",
-              "type": "boolean",
-              "default": true
+            "button_size": {
+              "description": "Additional padding for buttons",
+              "title": "Button Size",
+              "type": "number",
+              "format": "range",
+              "default": 5,
+              "maximum": 30,
+              "minimum": 0,
+              "multipleOf": 1
+            },
+            "position_desktop": {
+              "title": "Button Position",
+              "type": "string",
+              "enum": [
+                "inline",
+                "left",
+                "right",
+                "bottom"
+              ],
+              "enum_titles": [
+                "Inline",
+                "Fixed on left side of Page",
+                "Fixed on right side of page",
+                "Fixed on bottom of page"
+              ],
+              "default": "inline"
             },
             "position_mobile": {
               "title": "Position on Mobile",
@@ -533,52 +538,42 @@
               ],
               "default": "inline"
             },
-            "position_desktop": {
-              "title": "Position on Desktop and Tablets",
-              "type": "string",
-              "enum": [
-                "inline",
-                "left",
-                "right",
-                "bottom"
-              ],
-              "enum_titles": [
-                "Inline",
-                "Fixed on left side of Page",
-                "Fixed on right side of page",
-                "Fixed on bottom of page"
-              ],
-              "default": "inline"
-            },
-            "layout": {
-              "title": "Layout",
-              "description": "",
-              "type": "string",
-              "enum": [
-                "vertical",
-                "horizontal"
-              ],
-              "enum_titles": [
-                "Vertical",
-                "Horizontal"
-              ],
-              "default": "horizontal"
-            },
             "button_shape": {
-              "title": "Button Shape",
-              "description": "",
+              "title": "Shape",
+              "description": "Button Shape",
               "type": "string",
               "enum": [
-                "circle",
+                "square",
+                "radius",
                 "rounded",
-                "square"
+                "circle",
+                "text"
               ],
               "enum_titles": [
-                "Circle",
+                "Square",
+                "Radius",
                 "Rounded",
-                "Square"
+                "Circle"
               ],
               "default": "square"
+            },
+            "layout_vertical": {
+              "title": "Vertical Layout",
+              "description": "In Inline mode, wether to display buttons vertically or not",
+              "type": "boolean",
+              "default": false
+            },
+            "stretch_buttons": {
+              "title": "Stretch buttons",
+              "description": "In Inline mode, make buttons fill all available width",
+              "type": "boolean",
+              "default": false
+            },
+            "show_labels": {
+              "title": "Show Labels",
+              "description": "Show text labels next to icon",
+              "type": "boolean",
+              "default": true
             }
           }
         }
@@ -1244,6 +1239,143 @@
         }
       ],
       "resources": []
+    }
+  },
+  {
+    "url": "https://hull-ships.github.io/hull-salesforce/manifest.json",
+    "manifest": {
+      "name": "Hull Salesforce",
+      "version": "0.1.0",
+      "description": "Hull <> Salesforce sync",
+      "readme": "readme.md",
+      "picture": "picture.png",
+      "settings": [],
+      "private_settings": [
+        {
+          "name": "salesforce_login",
+          "type": "string",
+          "required": true
+        },
+        {
+          "name": "salesforce_password",
+          "type": "string",
+          "required": true
+        },
+        {
+          "name": "salesforce_login_url",
+          "type": "string",
+          "required": true,
+          "default": "https://login.salesforce.com"
+        },
+        {
+          "name": "leads_mapping",
+          "title": "Leads",
+          "type": "array",
+          "default": [
+            {
+              "hull_field_name": "first_name",
+              "salesforce_field_name": "FirstName",
+              "default_value": "[Unknown]",
+              "overwrite": false
+            },
+            {
+              "hull_field_name": "last_name",
+              "salesforce_field_name": "LastName",
+              "default_value": "[Unknown]",
+              "overwrite": false
+            },
+            {
+              "hull_field_name": "email",
+              "salesforce_field_name": "Email",
+              "overwrite": false
+            }
+          ],
+          "items": {
+            "type": "object",
+            "properties": {
+              "hull_field_name": {
+                "type": "string",
+                "title": "Hull Field"
+              },
+              "salesforce_field_name": {
+                "type": "string",
+                "title": "Salesforce Field"
+              },
+              "overwrite": {
+                "type": "boolean",
+                "title": "Data from Hull overwrites data on Salesforce",
+                "default": false
+              },
+              "default_value": {
+                "type": "string",
+                "title": "Default Value"
+              },
+              "tpl": {
+                "type": "string",
+                "title": "Template for calculated value"
+              }
+            },
+            "required": [
+              "hull_field_name",
+              "salesforce_field_name"
+            ]
+          }
+        },
+        {
+          "name": "contacts_mapping",
+          "title": "Contact",
+          "type": "array",
+          "default": [
+            {
+              "hull_field_name": "first_name",
+              "salesforce_field_name": "FirstName",
+              "default_value": "[Unknown]",
+              "overwrite": false
+            },
+            {
+              "hull_field_name": "last_name",
+              "salesforce_field_name": "LastName",
+              "default_value": "[Unknown]",
+              "overwrite": false
+            },
+            {
+              "hull_field_name": "email",
+              "salesforce_field_name": "Email",
+              "overwrite": false
+            }
+          ],
+          "items": {
+            "type": "object",
+            "properties": {
+              "hull_field_name": {
+                "type": "string",
+                "title": "Hull Field"
+              },
+              "salesforce_field_name": {
+                "type": "string",
+                "title": "Salesforce Field"
+              },
+              "overwrite": {
+                "type": "boolean",
+                "title": "Data from Hull overwrites data on Salesforce",
+                "default": false
+              },
+              "default_value": {
+                "type": "string",
+                "title": "Default Value"
+              },
+              "tpl": {
+                "type": "string",
+                "title": "Template for calculated value"
+              }
+            },
+            "required": [
+              "hull_field_name",
+              "salesforce_field_name"
+            ]
+          }
+        }
+      ]
     }
   }
 ]
