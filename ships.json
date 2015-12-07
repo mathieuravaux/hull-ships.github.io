@@ -13,5 +13,6 @@
   "hull-message-bar",
   "hull-poll",
   "hull-zendesk",
-  "hull-salesforce"
+  "hull-salesforce",
+  "hull-optimizely"
 ]
