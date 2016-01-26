@@ -1,6 +1,6 @@
 [
   {
-    "url": "https://hull-ships.github.io/hull-quiz/manifest.json",
+    "url": "https://ships.hull.io/hull-quiz/manifest.json",
     "manifest": {
       "name": "Classic Quiz",
       "version": "0.0.1",
@@ -207,7 +207,7 @@
     }
   },
   {
-    "url": "https://hull-ships.github.io/hull-comments/manifest.json",
+    "url": "https://ships.hull.io/hull-comments/manifest.json",
     "manifest": {
       "name": "Comments",
       "description": "A clean comments widget, with Social login, likes and upvotes",
@@ -263,7 +263,7 @@
     }
   },
   {
-    "url": "https://hull-ships.github.io/hull-ship-boilerplate/manifest.json",
+    "url": "https://ships.hull.io/hull-ship-boilerplate/manifest.json",
     "manifest": {
       "name": "Hull Ship Boilerplate",
       "description": "Hull Ship Boilerplate",
@@ -286,7 +286,7 @@
     }
   },
   {
-    "url": "https://hull-ships.github.io/hull-login/manifest.json",
+    "url": "https://ships.hull.io/hull-login/manifest.json",
     "manifest": {
       "name": "Login",
       "description": "A complete user registration and social login modal",
@@ -446,7 +446,7 @@
     }
   },
   {
-    "url": "https://hull-ships.github.io/hull-sharing-buttons/manifest.json",
+    "url": "https://ships.hull.io/hull-sharing-buttons/manifest.json",
     "manifest": {
       "name": "Sharing Buttons",
       "description": "A set of social sharing buttons",
@@ -581,7 +581,7 @@
     }
   },
   {
-    "url": "https://hull-ships.github.io/hull-comments-count/manifest.json",
+    "url": "https://ships.hull.io/hull-comments-count/manifest.json",
     "manifest": {
       "name": "Hull Comments Count",
       "description": "A simple comments counter",
@@ -594,7 +594,7 @@
     }
   },
   {
-    "url": "https://hull-ships.github.io/hull-tracking/manifest.json",
+    "url": "https://ships.hull.io/hull-tracking/manifest.json",
     "manifest": {
       "name": "Tracking Ship",
       "description": "A super small ship to add Click Tracking with user-defined selectors",
@@ -635,7 +635,7 @@
     }
   },
   {
-    "url": "https://hull-ships.github.io/hull-landing-page/manifest.json",
+    "url": "https://ships.hull.io/hull-landing-page/manifest.json",
     "manifest": {
       "name": "Landing Page Ship",
       "description": "Displays a landing page with customizable Background, content, call to action and a row of Images",
@@ -765,7 +765,7 @@
     }
   },
   {
-    "url": "https://hull-ships.github.io/hull-share-selection/manifest.json",
+    "url": "https://ships.hull.io/hull-share-selection/manifest.json",
     "manifest": {
       "name": "Share Selection",
       "description": "Shows a floating share popup when selecting text content",
@@ -827,7 +827,7 @@
     }
   },
   {
-    "url": "https://hull-ships.github.io/hull-olark/manifest.json",
+    "url": "https://ships.hull.io/hull-olark/manifest.json",
     "manifest": {
       "name": "Olark",
       "description": "Install Olark in your site",
@@ -864,7 +864,7 @@
     }
   },
   {
-    "url": "https://hull-ships.github.io/hull-segment/manifest.json",
+    "url": "https://ships.hull.io/hull-segment/manifest.json",
     "manifest": {
       "name": "Segment",
       "description": "Install Segment in your site",
@@ -901,7 +901,7 @@
     }
   },
   {
-    "url": "https://hull-ships.github.io/hull-message-bar/manifest.json",
+    "url": "https://ships.hull.io/hull-message-bar/manifest.json",
     "manifest": {
       "name": "Message Bar",
       "description": "Show a Message bar on top of your site",
@@ -1073,7 +1073,7 @@
     }
   },
   {
-    "url": "https://hull-ships.github.io/hull-poll/manifest.json",
+    "url": "https://ships.hull.io/hull-poll/manifest.json",
     "manifest": {
       "name": "Poll",
       "description": "poll",
@@ -1198,7 +1198,7 @@
     }
   },
   {
-    "url": "https://hull-ships.github.io/hull-zendesk/manifest.json",
+    "url": "https://ships.hull.io/hull-zendesk/manifest.json",
     "manifest": {
       "name": "Zendesk",
       "description": "Install Zendesk in your site",
@@ -1242,7 +1242,86 @@
     }
   },
   {
-    "url": "https://hull-ships.github.io/hull-salesforce/manifest.json",
+    "url": "https://ships.hull.io/hull-shopify/manifest.json",
+    "manifest": {
+      "name": "Shopify",
+      "description": "Hull Shopify integration",
+      "picture": "picture.png",
+      "index": "ship.js",
+      "version": "0.0.1",
+      "locales": [
+        "en"
+      ],
+      "readme": "readme.md",
+      "deployment_settings": [
+        {
+          "name": "_selector",
+          "default": "body",
+          "type": "string",
+          "format": "string"
+        },
+        {
+          "name": "_placement",
+          "default": "append",
+          "type": "string",
+          "format": "string"
+        }
+      ],
+      "settings": [],
+      "resources": []
+    }
+  },
+  {
+    "url": "https://hull-optimizely.herokuapp.com/manifest.json",
+    "manifest": {
+      "name": "Hull Optimizely",
+      "description": "Supercharge Optmizely, send Hull segments as Audiences",
+      "picture": "picture.png",
+      "readme": "readme.md",
+      "index": "ship.js",
+      "version": "0.0.1",
+      "settings": [
+        {
+          "name": "audiences",
+          "format": "hidden",
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+              "audience_id": {
+                "type": "integer"
+              },
+              "segment_id": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "name",
+              "segment_id",
+              "audience_id"
+            ]
+          }
+        }
+      ],
+      "private_settings": [
+        {
+          "name": "optimizely_api_key",
+          "type": "string",
+          "required": true
+        },
+        {
+          "name": "optimizely_project_id",
+          "type": "integer",
+          "required": true
+        }
+      ]
+    }
+  },
+  {
+    "url": "https://hull-salesforce.herokuapp.com/manifest.json",
     "manifest": {
       "name": "Hull Salesforce",
       "version": "0.1.0",
@@ -1374,55 +1453,6 @@
               "salesforce_field_name"
             ]
           }
-        }
-      ]
-    }
-  },
-  {
-    "url": "https://hull-ships.github.io/hull-optimizely/manifest.json",
-    "manifest": {
-      "name": "Hull Optimizely",
-      "description": "Supercharge Optmizely, send Hull segments as Audiences",
-      "picture": "picture.png",
-      "readme": "readme.md",
-      "index": "ship.js",
-      "version": "0.0.1",
-      "settings": [
-        {
-          "name": "audiences",
-          "format": "hidden",
-          "type": "array",
-          "items": {
-            "type": "object",
-            "properties": {
-              "name": {
-                "type": "string"
-              },
-              "audience_id": {
-                "type": "integer"
-              },
-              "segment_id": {
-                "type": "string"
-              }
-            },
-            "required": [
-              "name",
-              "segment_id",
-              "audience_id"
-            ]
-          }
-        }
-      ],
-      "private_settings": [
-        {
-          "name": "optimizely_api_key",
-          "type": "string",
-          "required": true
-        },
-        {
-          "name": "optimizely_project_id",
-          "type": "integer",
-          "required": true
         }
       ]
     }
