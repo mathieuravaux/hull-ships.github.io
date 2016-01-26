@@ -59,7 +59,7 @@ var output = {
   filename: "[name].js",
   chunkFileName: "[name].chunk.js",
   libraryTarget: "umd",
-  library: displayName,
+  library: 'Hull'+displayName+'Ship',
   publicPath: assetsFolder+"/"
 };
 
