@@ -169,10 +169,12 @@ gulp.task("webpack:server", function() {
 
 
 
+
+
 gulp.task("registry",function(done){
   var org = config.org;
   var repos = ["orgs", org, "repos"].join("/");
-  var shipsList = require('./ships.json');
+  var ships = [];
 
   function string_src(filename, string) {
     var src = require('stream').Readable({ objectMode: true })
@@ -183,20 +185,28 @@ gulp.task("registry",function(done){
     return src
   }
 
-  function getShipManifest(repoName) {
+  function getShipManifest(repo) {
     return new Promise(function(resolve, reject) {
-      var manifestUrl = "https://" + org + ".github.io/" + repoName + "/manifest.json";
       // Skip if repo doesnt start with 'hull-' (Basic public/private convention)
-      if(repoName.indexOf('hull-')!=0){ return resolve(); }
-      http.get(manifestUrl, function(err, res) {
+      if (repo.name.indexOf('hull-')!=0 || repo.name=='hull-ships.github.io'){ 
+        console.warn('Skipping : ', repo.name, ' – Does not start with Hull')
+        return resolve(); }
+      if (!repo.homepage || !repo.homepage.length){ 
+        console.warn('Skipping : ', repo.name, ' – No Homepage')
+        return resolve(); }
+
+      var srcUrl =  ("https://" + org + ".github.io/" + repo.name).replace(/\/$/,'') //avoid Cloudfront cache
+      var installUrl = repo.homepage.replace(/\/$/,'') //Homepage URL
+
+      http.get(srcUrl+"/manifest.json", function(err, res) {
         if (res && res.ok) {
           if(res.body.picture && res.body.picture.length){
             // Skip if repo doesnt have a picture (mandatory)
-            resolve({ url: manifestUrl, manifest: res.body });
-            console.warn("Adding Ship : ", res.body.name, " – Version ", res.body.version, repoName);
+            resolve({ url: installUrl+"/manifest.json", manifest: res.body });
+            console.warn("Adding Ship : ", res.body.name, " – Version ", res.body.version, repo.name);
           } else {
             resolve();
-            console.warn("Skipping Ship : ", res.body.name, " – No Picture found", repoName);
+            console.warn("Skipping : ", res.body.name, " – No Picture found", repo.name);
           }
         } else {
           resolve();
@@ -205,23 +215,34 @@ gulp.task("registry",function(done){
     })
   }
 
+  github.get(repos, function(err, status, body, headers) {
 
-  var ships = shipsList.map(getShipManifest);
+    if (err) {
+      console.log("Error while building registry", err);
+      done();
+    } else {
 
-  Promise.all(ships).then(function(manifests) {
-    var registry = [];
-    manifests.map(function(m) { if (m) registry.push(m); });
+      body.map(function(repo) {
+        ships.push(getShipManifest(repo));
+      });
 
-    string_src('ships.json',JSON.stringify(registry, " ", 2))
-      .pipe(gulp.dest(path.join(process.cwd(), config.outputFolder)));
+      Promise.all(ships).then(function(manifests) {
+        var registry = [];
+        manifests.map(function(m) { if (m) registry.push(m); });
 
-    string_src('ships.json.js',"window['hull-ships-registry:" + org + "'](" + JSON.stringify(registry) + ");")
-      .pipe(gulp.dest(path.join(process.cwd(), config.outputFolder)));
+        string_src('ships.json',JSON.stringify(registry, " ", 2))
+          .pipe(gulp.dest(path.join(process.cwd(), config.outputFolder)));
 
-    done();
-  }, function() { done(); });
+        string_src('ships.json.js',"window['hull-ships-registry:" + org + "'](" + JSON.stringify(registry) + ");")
+          .pipe(gulp.dest(path.join(process.cwd(), config.outputFolder)));
+
+        done();
+      }, function() { done(); });
+    }
+  });
 
 });
+
 
 // Deploy production bundle to gh-pages.
 gulp.task("gh:deploy", function (callback) {

@@ -108,6 +108,7 @@ module.exports = {
   displayName        : displayName,
 
   org                : 'hull-ships',
+  domain             : 'ships.hull.io',
   files              : files,
 
   outputFolder       : outputFolder,

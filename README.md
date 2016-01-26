@@ -14,3 +14,9 @@ This repository contains the list of Ships shown in the Ships Gallery for Hull.i
 
 This will fetch all public Ships from `https://github.com/hull-ships/`, write the list in the `registry` folder, and publish back to `master`
 
+
+### To be included, a ship needs
+
+- to start with `hull-`
+- to have a `picture` in the manifest
+- to have a `homepage` field set
