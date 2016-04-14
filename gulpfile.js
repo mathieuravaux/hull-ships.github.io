@@ -190,25 +190,30 @@ gulp.task("registry",function(done){
       // Skip if repo doesnt start with 'hull-' (Basic public/private convention)
       if (repo.name.indexOf('hull-')!=0 || repo.name=='hull-ships.github.io'){ 
         console.warn('Skipping : ', repo.name, ' – Does not start with Hull')
-        return resolve(); }
+        return resolve();
+      }
+
       if (!repo.homepage || !repo.homepage.length){ 
         console.warn('Skipping : ', repo.name, ' – No Homepage')
-        return resolve(); }
+        return resolve();
+      }
 
-      var srcUrl =  ("https://" + org + ".github.io/" + repo.name).replace(/\/$/,'') //avoid Cloudfront cache
-      var installUrl = repo.homepage.replace(/\/$/,'') //Homepage URL
+      var url = repo.homepage.replace(/\/$/,'') //Homepage URL
+      var githubUrl =  ("https://" + org + ".github.io/" + repo.name).replace(/\/$/,'') //avoid Cloudfront cache
+      var cloudfrontBusting = ((url.indexOf('https://ships.hull.io')>-1) ? githubUrl : url)+"/manifest.json"
 
-      http.get(srcUrl+"/manifest.json", function(err, res) {
+      http.get(cloudfrontBusting, function(err, res) {
         if (res && res.ok) {
           if(res.body.picture && res.body.picture.length){
             // Skip if repo doesnt have a picture (mandatory)
-            resolve({ url: installUrl+"/manifest.json", manifest: res.body });
-            console.warn("Adding Ship : ", res.body.name, " – Version ", res.body.version, repo.name);
+            resolve({ url: cloudfrontBusting, manifest: res.body });
+            console.warn("Adding Ship : ", res.body.name, " – Version ", res.body.version, ' - ', repo.homepage , repo.name);
           } else {
             resolve();
             console.warn("Skipping : ", res.body.name, " – No Picture found", repo.name);
           }
         } else {
+          console.log('Error Fetching from '+ srcUrl + "/manifest.json", err)
           resolve();
         }
       })
@@ -221,7 +226,6 @@ gulp.task("registry",function(done){
       console.log("Error while building registry", err);
       done();
     } else {
-
       body.map(function(repo) {
         ships.push(getShipManifest(repo));
       });
