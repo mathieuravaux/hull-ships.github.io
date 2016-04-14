@@ -207,13 +207,13 @@ gulp.task("registry",function(done){
           if(res.body.picture && res.body.picture.length){
             // Skip if repo doesnt have a picture (mandatory)
             resolve({ url: cloudfrontBusting, manifest: res.body });
-            console.warn("Adding Ship : ", res.body.name, " – Version ", res.body.version, ' - ', repo.homepage , repo.name);
+            console.warn("Adding Ship : ", res.body.name, " – Version ", res.body.version, ' - ', cloudfrontBusting , repo.name);
           } else {
             resolve();
             console.warn("Skipping : ", res.body.name, " – No Picture found", repo.name);
           }
         } else {
-          console.log('Error Fetching from '+ srcUrl + "/manifest.json", err)
+          console.log('Error Fetching from '+ cloudfrontBusting, err)
           resolve();
         }
       })

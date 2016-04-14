@@ -9,7 +9,7 @@ This repository contains the list of Ships shown in the Ships Gallery for Hull.i
 - `git clone https://github.com/hull-ships/hull-ships.github.io.git`
 - `cd hull-ships.github.io`
 - `git checkout develop`
-- `npm install grunt`
+- `npm i`
 - `gulp deploy`
 
 This will fetch all public Ships from `https://github.com/hull-ships/`, write the list in the `registry` folder, and publish back to `master`
