@@ -116,10 +116,13 @@
   {
     "url": "https://hull-salesforce.herokuapp.com/manifest.json",
     "manifest": {
-      "name": "Hull Salesforce",
-      "version": "0.1.1",
-      "description": "Hull <> Salesforce sync",
+      "name": "Salesforce",
+      "tags": [
+        "outgoing"
+      ],
+      "description": "Send Users as Leads or Contacts to Salesforce with custom mappings",
       "readme": "readme.md",
+      "version": "0.1.1",
       "picture": "picture.png",
       "ui": false,
       "settings": [],
@@ -392,6 +395,13 @@
       "version": "0.0.1",
       "private_settings": [
         {
+          "name": "excluded_domains",
+          "title": "Email Domain Excludes",
+          "description": "Domains to exclude from fetching. Comma Separated",
+          "type": "string",
+          "format": "text"
+        },
+        {
           "name": "api_key",
           "title": "Clearbit API Key",
           "description": "Clearbit API Key, found in https://dashboard.clearbit.com/keys",
@@ -411,7 +421,11 @@
     "url": "https://hull-computed-traits.herokuapp.com/manifest.json",
     "manifest": {
       "name": "Computed Traits",
-      "description": "Compute custom traits",
+      "description": "Recompute custom properties with Javascript logic whenever a user is updated",
+      "tags": [
+        "incoming",
+        "outgoing"
+      ],
       "picture": "picture.png",
       "ui": false,
       "admin": "admin.html",
@@ -431,6 +445,84 @@
           "description": "Custom javascript code",
           "type": "string",
           "format": "code"
+        }
+      ],
+      "resources": [],
+      "subscriptions": [
+        {
+          "url": "/notify"
+        }
+      ]
+    }
+  },
+  {
+    "url": "https://hull-facebook-audiences.herokuapp.com/manifest.json",
+    "manifest": {
+      "name": "Facebook Audiences",
+      "description": "Send Hull Segments to Facebook Custom audiences",
+      "tags": [
+        "outgoing"
+      ],
+      "picture": "picture.png",
+      "ui": false,
+      "admin": "admin.html",
+      "readme": "readme.md",
+      "version": "0.0.1",
+      "private_settings": [
+        {
+          "name": "facebook_access_token",
+          "title": "Facebook Access Token",
+          "type": "string",
+          "format": "hidden"
+        },
+        {
+          "name": "facebook_ad_account_id",
+          "title": "Facebook Ad Account ID",
+          "type": "string",
+          "format": "hidden"
+        }
+      ],
+      "resources": [],
+      "subscriptions": [
+        {
+          "url": "/notify"
+        }
+      ]
+    }
+  },
+  {
+    "url": "https://hull-datanyze.herokuapp.com/manifest.json",
+    "manifest": {
+      "name": "Datanyze",
+      "description": "Fetch additional customer data from Datanyze",
+      "tags": [
+        "outgoing"
+      ],
+      "picture": "picture.png",
+      "ui": false,
+      "readme": "readme.md",
+      "version": "0.0.1",
+      "private_settings": [
+        {
+          "name": "excluded_domains",
+          "title": "Email Domain Excludes",
+          "description": "Domains to exclude from fetching. Comma Separated",
+          "type": "string",
+          "format": "text"
+        },
+        {
+          "name": "token",
+          "title": "Datanyze Token",
+          "description": "Datanyze Token",
+          "type": "string",
+          "format": "text"
+        },
+        {
+          "name": "username",
+          "title": "Datanyze Username",
+          "description": "Datanyze Username or Email",
+          "type": "string",
+          "format": "text"
         }
       ],
       "resources": [],
