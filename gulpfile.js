@@ -173,7 +173,6 @@ gulp.task("webpack:server", function() {
 
 gulp.task("registry",function(done){
   var org = config.org;
-  var repos = ["orgs", org, "repos"].join("/");
   var ships = [];
 
   function string_src(filename, string) {
@@ -220,7 +219,7 @@ gulp.task("registry",function(done){
     })
   }
 
-  github.get(repos, function(err, status, body, headers) {
+  github.org(org).repos({per_page: 100},function(err, body, headers) {
 
     if (err) {
       console.log("Error while building registry", err);
