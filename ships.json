@@ -310,7 +310,7 @@
     "url": "https://hull-slack.herokuapp.com/manifest.json",
     "manifest": {
       "name": "Slack",
-      "description": "Noify a Slack Channel whenever a User enters or leaves a Segment",
+      "description": "Notify a Slack Channel whenever a User enters or leaves a Segment",
       "tags": [
         "outgoing"
       ],
