@@ -8,6 +8,7 @@
         "incoming",
         "outgoing"
       ],
+      "index": "ship.js",
       "picture": "picture.png",
       "ui": false,
       "admin": "admin.html",
@@ -27,6 +28,30 @@
           "format": "string"
         }
       ],
+      "private_settings": [
+        {
+          "name": "synchronized_properties",
+          "title": "Properties sent back to Segment.com",
+          "description": "Send those user properties to Segment.com. Sends nothing if empty.",
+          "type": "array",
+          "format": "trait",
+          "items": {
+            "type": "string"
+          },
+          "default": []
+        },
+        {
+          "name": "synchronized_segments",
+          "title": "Filter users",
+          "description": "Only send users who match these segments to Segment.com. Keep empty to send everyone.",
+          "type": "array",
+          "format": "segment",
+          "items": {
+            "type": "string"
+          },
+          "default": []
+        }
+      ],
       "settings": [
         {
           "name": "write_key",
@@ -38,10 +63,24 @@
         {
           "name": "handle_groups",
           "title": "Handle Groups",
-          "description": "Applies group attributes to as user traits, prefixed with group__",
+          "description": "Applies group attributes to as user traits, prefixed with group/",
           "type": "boolean",
           "default": false,
           "format": "hidden"
+        },
+        {
+          "name": "handle_pages",
+          "title": "Handle Pages",
+          "description": "Store analytics.page() events. Since there can be quite a few of those, they're disabled by default",
+          "type": "boolean",
+          "default": false
+        },
+        {
+          "name": "handle_screens",
+          "title": "Handle Screens",
+          "description": "Store analytics.screen() events. Since there can be quite a few of those, they're disabled by default",
+          "type": "boolean",
+          "default": false
         }
       ],
       "resources": [],
@@ -277,7 +316,8 @@
       ],
       "picture": "picture.png",
       "version": "0.0.1",
-      "settings": [
+      "settings": [],
+      "private_settings": [
         {
           "name": "hook_url",
           "title": "Webhook URL",
@@ -287,11 +327,40 @@
           "format": "text"
         },
         {
+          "name": "synchronized_segments",
+          "title": "Filtered Segments",
+          "description": "Only trigger if user matches at least one these segments (Empty to send everyone)",
+          "default": [],
+          "type": "array",
+          "format": "segment"
+        },
+        {
+          "name": "send_creation",
+          "title": "Notify on Create",
+          "default": true,
+          "type": "boolean",
+          "format": "checkbox"
+        },
+        {
+          "name": "send_update",
+          "title": "Notify on Update",
+          "default": true,
+          "type": "boolean",
+          "format": "checkbox"
+        },
+        {
           "name": "channel",
           "title": "Slack Channel",
           "description": "Where to send notifications?. Default is the one specified in Slack settings",
           "type": "string",
           "format": "text"
+        },
+        {
+          "name": "send_to_named_channel",
+          "title": "Post to channel named as matching segment",
+          "default": false,
+          "type": "boolean",
+          "format": "checkbox"
         },
         {
           "name": "username",
@@ -324,7 +393,7 @@
     "url": "https://hull-zapier.herokuapp.com/manifest.json",
     "manifest": {
       "name": "Zapier",
-      "description": "Notify Zapier whenever a User enters or Leaves a Segment",
+      "description": "Send Hull Users updates to Zapier",
       "tags": [
         "outgoing"
       ],
@@ -338,6 +407,24 @@
           "default": "https://zapier.com/hooks/catch/xxx/",
           "type": "string",
           "format": "text"
+        }
+      ],
+      "private_settings": [
+        {
+          "name": "synchronized_segments",
+          "title": "Filtered Segments",
+          "description": "Only trigger if user matches at least one these segments (Empty to send everyone)",
+          "default": [],
+          "type": "array",
+          "format": "segment"
+        },
+        {
+          "name": "synchronized_properties",
+          "title": "Filtered Properties",
+          "description": "Only trigger if one of these properties changed (Empty to send on any change)",
+          "default": [],
+          "type": "array",
+          "format": "trait"
         }
       ],
       "deployment_settings": [],
@@ -461,7 +548,8 @@
       "name": "Facebook Audiences",
       "description": "Send Hull Segments to Facebook Custom audiences",
       "tags": [
-        "outgoing"
+        "outgoing",
+        "batch"
       ],
       "picture": "picture.png",
       "ui": false,
@@ -526,6 +614,87 @@
         }
       ],
       "resources": [],
+      "subscriptions": [
+        {
+          "url": "/notify"
+        }
+      ]
+    }
+  },
+  {
+    "url": "https://hull-nutshell.herokuapp.com/manifest.json",
+    "manifest": {
+      "name": "Nutshell",
+      "tags": [
+        "outgoing",
+        "wideSettings"
+      ],
+      "description": "Send Users as Leads or Contacts to Nutshell with custom mappings",
+      "version": "0.1.0",
+      "picture": "picture.png",
+      "ui": false,
+      "readme": "readme.md",
+      "settings": [],
+      "private_settings": [
+        {
+          "name": "form_api_url",
+          "title": "Nutshell Form API url",
+          "type": "string",
+          "required": true
+        },
+        {
+          "name": "synchronized_segments",
+          "title": "Filter users",
+          "description": "Only send users who match these segments to Segment.com. Keep empty to send everyone.",
+          "type": "array",
+          "format": "segment",
+          "items": {
+            "type": "string"
+          },
+          "default": []
+        },
+        {
+          "name": "mapping",
+          "title": "Fields Mapping",
+          "type": "array",
+          "default": [
+            {
+              "hull": "name",
+              "nutshell": "contact.name",
+              "is_required": true
+            },
+            {
+              "hull": "email",
+              "nutshell": "contact.email",
+              "is_required": true
+            }
+          ],
+          "items": {
+            "type": "object",
+            "properties": {
+              "hull": {
+                "type": "string",
+                "format": "trait",
+                "title": "Hull Field"
+              },
+              "nutshell": {
+                "type": "string",
+                "title": "Nutshell Field"
+              },
+              "is_required": {
+                "title": "Is required",
+                "description": "Skip sync if this field is not defined",
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "hull",
+              "nutshell",
+              "is_required"
+            ]
+          }
+        }
+      ],
       "subscriptions": [
         {
           "url": "/notify"
