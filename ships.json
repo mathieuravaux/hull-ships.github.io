@@ -6,7 +6,8 @@
       "description": "Receive Events from Segment, send updated data to Segment",
       "tags": [
         "incoming",
-        "outgoing"
+        "outgoing",
+        "batch"
       ],
       "index": "ship.js",
       "picture": "picture.png",
@@ -50,6 +51,13 @@
             "type": "string"
           },
           "default": []
+        },
+        {
+          "name": "forward_events",
+          "title": "Forward Events",
+          "description": "Also forward events. Use only if your segment source and destination are different.",
+          "type": "boolean",
+          "default": false
         }
       ],
       "settings": [
@@ -59,14 +67,6 @@
           "description": "Segment Write Key, found in Project Settings > Keys",
           "type": "string",
           "format": "text"
-        },
-        {
-          "name": "handle_groups",
-          "title": "Handle Groups",
-          "description": "Applies group attributes to as user traits, prefixed with group/",
-          "type": "boolean",
-          "default": false,
-          "format": "hidden"
         },
         {
           "name": "handle_pages",
@@ -79,6 +79,25 @@
           "name": "handle_screens",
           "title": "Handle Screens",
           "description": "Store analytics.screen() events. Since there can be quite a few of those, they're disabled by default",
+          "type": "boolean",
+          "default": false
+        },
+        {
+          "name": "public_id_field",
+          "title": "Public ID Field",
+          "description": "User field to use as the userId field for data sent to segment",
+          "type": "string",
+          "enum": [
+            "id",
+            "external_id"
+          ],
+          "default": "external_id",
+          "format": "hidden"
+        },
+        {
+          "name": "handle_groups",
+          "title": "Handle Groups",
+          "description": "Applies group attributes to as user traits, prefixed with group/",
           "type": "boolean",
           "default": false
         }
@@ -157,7 +176,8 @@
     "manifest": {
       "name": "Salesforce",
       "tags": [
-        "outgoing"
+        "outgoing",
+        "wideSettings"
       ],
       "description": "Send Users as Leads or Contacts to Salesforce with custom mappings",
       "readme": "readme.md",
@@ -185,10 +205,9 @@
         {
           "name": "segment_id",
           "type": "string",
-          "title": "Segment ID to sync (optional)",
-          "description": "Select a segment to sync with Salesforce",
-          "pattern": "^[a-z0-9]{24}$",
-          "format": "hidden"
+          "title": "Segment ID to sync",
+          "description": "Select a segment to sync with Salesforce. No value syncs everyone",
+          "format": "segment"
         },
         {
           "name": "leads_mapping",
@@ -218,6 +237,7 @@
             "properties": {
               "hull_field_name": {
                 "type": "string",
+                "format": "trait",
                 "title": "Hull Field"
               },
               "salesforce_field_name": {
@@ -226,7 +246,7 @@
               },
               "overwrite": {
                 "type": "boolean",
-                "title": "Data from Hull overwrites data on Salesforce",
+                "title": "Hull overwrites Salesforce",
                 "default": false
               },
               "default_value": {
@@ -272,6 +292,7 @@
             "properties": {
               "hull_field_name": {
                 "type": "string",
+                "format": "trait",
                 "title": "Hull Field"
               },
               "salesforce_field_name": {
@@ -280,7 +301,7 @@
               },
               "overwrite": {
                 "type": "boolean",
-                "title": "Data from Hull overwrites data on Salesforce",
+                "title": "Hull overwrites Salesforce",
                 "default": false
               },
               "default_value": {
@@ -472,21 +493,29 @@
     "manifest": {
       "name": "Clearbit",
       "description": "Fetch additional customer data from Clearbit",
+      "picture": "picture.png",
+      "version": "0.0.3",
       "tags": [
         "incoming",
-        "outgoing"
+        "outgoing",
+        "batch"
       ],
-      "picture": "picture.png",
-      "ui": false,
-      "readme": "readme.md",
-      "version": "0.0.1",
       "private_settings": [
+        {
+          "type": "string",
+          "format": "title",
+          "name": "config_info",
+          "title": "Configuration"
+        },
         {
           "name": "excluded_domains",
           "title": "Email Domain Excludes",
-          "description": "Domains to exclude from fetching. Comma Separated",
-          "type": "string",
-          "format": "text"
+          "description": "Domains to exclude from fetching.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "format": "domains"
         },
         {
           "name": "api_key",
@@ -494,47 +523,125 @@
           "description": "Clearbit API Key, found in https://dashboard.clearbit.com/keys",
           "type": "string",
           "format": "text"
-        }
-      ],
-      "resources": [],
-      "subscriptions": [
-        {
-          "url": "/notify"
-        }
-      ]
-    }
-  },
-  {
-    "url": "https://hull-computed-traits.herokuapp.com/manifest.json",
-    "manifest": {
-      "name": "Computed Traits",
-      "description": "Recompute custom properties with Javascript logic whenever a user is updated",
-      "tags": [
-        "incoming",
-        "outgoing"
-      ],
-      "picture": "picture.png",
-      "ui": false,
-      "admin": "admin.html",
-      "readme": "readme.md",
-      "version": "0.0.1",
-      "private_settings": [
-        {
-          "name": "sentry_dsn",
-          "title": "Sentry DSN",
-          "description": "URL of a sentry instance to collect logs and exception notifications",
-          "type": "string",
-          "format": "hidden"
         },
         {
-          "name": "code",
-          "title": "Code",
-          "description": "Custom javascript code",
           "type": "string",
-          "format": "code"
+          "format": "title",
+          "name": "enrich_info",
+          "title": "Enrichment"
+        },
+        {
+          "name": "enrich_segments",
+          "title": "Filter",
+          "description": "Only enrich users who match these segments.",
+          "type": "array",
+          "format": "segment",
+          "items": {
+            "type": "string"
+          },
+          "default": []
+        },
+        {
+          "type": "string",
+          "format": "title",
+          "name": "prospect_info",
+          "title": "Similar Lead Discovery"
+        },
+        {
+          "name": "enable_prospect",
+          "title": "Enable similar lead discovery",
+          "type": "boolean",
+          "default": false
+        },
+        {
+          "name": "prospect_segments",
+          "title": "Filter",
+          "description": "Search for similar leads for users who enter these segments",
+          "type": "array",
+          "format": "segment",
+          "items": {
+            "type": "string"
+          },
+          "default": []
+        },
+        {
+          "name": "limit_companies",
+          "title": "Max number of companies to fetch",
+          "type": "number",
+          "format": "range",
+          "default": 5,
+          "minimum": 1,
+          "maximum": 10,
+          "multipleOf": 1
+        },
+        {
+          "name": "limit_prospects",
+          "title": "Max number of prospects to fetch per company",
+          "type": "number",
+          "format": "range",
+          "default": 5,
+          "minimum": 1,
+          "maximum": 20,
+          "multipleOf": 1
+        },
+        {
+          "name": "prospect_role",
+          "title": "Prospect Role: ",
+          "description": "Get prospects with role",
+          "type": "string",
+          "enum": [
+            "",
+            "ceo",
+            "communications",
+            "consulting",
+            "customer_service",
+            "education",
+            "engineering",
+            "finance",
+            "founder",
+            "health_professional",
+            "human_resources",
+            "information_technology",
+            "legal",
+            "marketing",
+            "operations",
+            "owner",
+            "president",
+            "product",
+            "public_relations",
+            "real_estate",
+            "recruiting",
+            "research",
+            "sales"
+          ]
+        },
+        {
+          "name": "prospect_seniority",
+          "title": "Prospect Seniority: ",
+          "description": "Get prospects with seniority: ",
+          "type": "string",
+          "enum": [
+            "",
+            "executive",
+            "director",
+            "manager"
+          ]
+        },
+        {
+          "name": "prospect_titles",
+          "title": "Prospect Job title: ",
+          "description": "You can add multiple entries to search for multiple titles.",
+          "type": "array",
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "format": "select"
         }
       ],
       "resources": [],
+      "readme": "readme.md",
+      "ui": false,
       "subscriptions": [
         {
           "url": "/notify"
@@ -553,21 +660,19 @@
       ],
       "picture": "picture.png",
       "ui": false,
-      "admin": "admin.html",
+      "admin": "admin",
       "readme": "readme.md",
       "version": "0.0.1",
       "private_settings": [
         {
           "name": "facebook_access_token",
           "title": "Facebook Access Token",
-          "type": "string",
-          "format": "hidden"
+          "type": "string"
         },
         {
           "name": "facebook_ad_account_id",
           "title": "Facebook Ad Account ID",
-          "type": "string",
-          "format": "hidden"
+          "type": "string"
         }
       ],
       "resources": [],
@@ -695,6 +800,46 @@
           }
         }
       ],
+      "subscriptions": [
+        {
+          "url": "/notify"
+        }
+      ]
+    }
+  },
+  {
+    "url": "https://hull-processor.herokuapp.com/manifest.json",
+    "manifest": {
+      "name": "Processor",
+      "description": "Recompute custom properties and emit events with Javascript logic whenever a user is updated",
+      "tags": [
+        "incoming",
+        "outgoing",
+        "batch"
+      ],
+      "picture": "picture.png",
+      "ui": false,
+      "admin": "admin.html",
+      "readme": "readme.md",
+      "version": "0.0.1",
+      "private_settings": [
+        {
+          "name": "sentry_dsn",
+          "title": "Sentry DSN",
+          "description": "URL of a sentry instance to collect logs and exception notifications",
+          "type": "string",
+          "format": "hidden"
+        },
+        {
+          "name": "code",
+          "title": "Code",
+          "description": "Enter Javascript code here, It will receive the data in the middle column, can emit `track()` and `traits()`. Preview results on the right. Save when finished",
+          "type": "string",
+          "default": "console.log(`Hello ${user.name}`);\n// traits({ coconuts: 12 });\n// traits({ coconuts: 13 });\n// traits({ coconuts: 14 }, { source: 'clearbit' });\n// //BEWARE - if you track() without a if() condition you trigger an infinite loop.\n// //if(false) { track('Viewed Monthy Python', { coconuts: 12 });}",
+          "format": "code"
+        }
+      ],
+      "resources": [],
       "subscriptions": [
         {
           "url": "/notify"
