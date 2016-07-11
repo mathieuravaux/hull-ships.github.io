@@ -31,20 +31,15 @@
       ],
       "private_settings": [
         {
-          "name": "synchronized_properties",
-          "title": "Properties sent back to Segment.com",
-          "description": "Send those user properties to Segment.com. Sends nothing if empty.",
-          "type": "array",
-          "format": "trait",
-          "items": {
-            "type": "string"
-          },
-          "default": []
+          "name": "sending_title",
+          "title": "Sending data to segment",
+          "format": "title",
+          "type": "string"
         },
         {
           "name": "synchronized_segments",
           "title": "Filter users",
-          "description": "Only send users who match these segments to Segment.com. Keep empty to send everyone.",
+          "description": "Only send Users matching one or more of these segments. Sends everyone if empty.",
           "type": "array",
           "format": "segment",
           "items": {
@@ -53,9 +48,20 @@
           "default": []
         },
         {
+          "name": "synchronized_properties",
+          "title": "Properties sent to Segment.com",
+          "description": "Select User properties sent to Segment.com. Sends nothing if empty.",
+          "type": "array",
+          "format": "trait",
+          "items": {
+            "type": "string"
+          },
+          "default": []
+        },
+        {
           "name": "forward_events",
-          "title": "Forward Events",
-          "description": "Also forward events. Use only if your segment source and destination are different.",
+          "title": "Forward Events received from Segment",
+          "description": "Re-send events we received from Segment.com. Use ONLY if Segment source and Destination are different.",
           "type": "boolean",
           "default": false
         }
@@ -69,16 +75,22 @@
           "format": "text"
         },
         {
+          "name": "receiving_title",
+          "title": "Receiving data from Segment",
+          "format": "title",
+          "type": "string"
+        },
+        {
           "name": "handle_pages",
           "title": "Handle Pages",
-          "description": "Store analytics.page() events. Since there can be quite a few of those, they're disabled by default",
+          "description": "Store analytics.page() events. Can generate a lot of volume",
           "type": "boolean",
           "default": false
         },
         {
           "name": "handle_screens",
           "title": "Handle Screens",
-          "description": "Store analytics.screen() events. Since there can be quite a few of those, they're disabled by default",
+          "description": "Store analytics.screen() events. Can generate a lot of volume",
           "type": "boolean",
           "default": false
         },
@@ -97,7 +109,7 @@
         {
           "name": "handle_groups",
           "title": "Handle Groups",
-          "description": "Applies group attributes to as user traits, prefixed with group/",
+          "description": "Handle group attributes as user traits, prefixed with 'group/'",
           "type": "boolean",
           "default": false
         }
@@ -837,6 +849,36 @@
           "type": "string",
           "default": "console.log(`Hello ${user.name}`);\n// traits({ coconuts: 12 });\n// traits({ coconuts: 13 });\n// traits({ coconuts: 14 }, { source: 'clearbit' });\n// //BEWARE - if you track() without a if() condition you trigger an infinite loop.\n// //if(false) { track('Viewed Monthy Python', { coconuts: 12 });}",
           "format": "code"
+        }
+      ],
+      "resources": [],
+      "subscriptions": [
+        {
+          "url": "/notify"
+        }
+      ]
+    }
+  },
+  {
+    "url": "https://hull-logger.herokuapp.com/manifest.json",
+    "manifest": {
+      "name": "Logger",
+      "description": "Log updates passing through Hull",
+      "tags": [
+        "outgoing"
+      ],
+      "picture": "picture.png",
+      "ui": false,
+      "admin": "admin.html",
+      "readme": "readme.md",
+      "version": "0.0.1",
+      "private_settings": [
+        {
+          "name": "sentry_dsn",
+          "title": "Sentry DSN",
+          "description": "URL of a sentry instance to collect logs and exception notifications",
+          "type": "string",
+          "format": "hidden"
         }
       ],
       "resources": [],
