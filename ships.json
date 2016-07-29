@@ -345,70 +345,113 @@
       "name": "Slack",
       "description": "Notify a Slack Channel whenever a User enters or leaves a Segment",
       "tags": [
-        "outgoing"
+        "outgoing",
+        "oneColumn"
       ],
+      "admin": "/auth/",
       "picture": "picture.png",
       "version": "0.0.1",
       "settings": [],
       "private_settings": [
         {
-          "name": "hook_url",
-          "title": "Webhook URL",
-          "description": "Slack Webhook Url, (see https://api.slack.com/incoming-webhooks and create one here )",
-          "default": "https://hooks.slack.com/services/xxxx/xxx/xxx",
-          "type": "string",
-          "format": "text"
-        },
-        {
           "name": "synchronized_segments",
-          "title": "Filtered Segments",
-          "description": "Only trigger if user matches at least one these segments (Empty to send everyone)",
+          "title": "Segments",
+          "description": "Post to channel when users match these segments (Empty to send everyone)",
           "default": [],
           "type": "array",
           "format": "segment"
         },
         {
-          "name": "send_creation",
-          "title": "Notify on Create",
+          "name": "token",
+          "title": "Token",
+          "type": "string",
+          "format": "hidden"
+        },
+        {
+          "name": "team_id",
+          "title": "team_id",
+          "type": "string",
+          "format": "hidden"
+        },
+        {
+          "name": "user_id",
+          "title": "user_id",
+          "type": "string",
+          "format": "hidden"
+        },
+        {
+          "name": "incoming_webhook",
+          "title": "Incoming Webhook",
+          "type": "object",
+          "format": "hidden",
+          "properties": {
+            "url": {
+              "title": "url",
+              "type": "string"
+            },
+            "channel": {
+              "title": "channel",
+              "type": "string"
+            },
+            "channel_id": {
+              "title": "channel_id",
+              "type": "string"
+            },
+            "configuration_url": {
+              "title": "configuration_url",
+              "type": "string"
+            }
+          }
+        },
+        {
+          "name": "bot",
+          "title": "Bot",
+          "type": "object",
+          "format": "hidden",
+          "properties": {
+            "bot_user_id": {
+              "title": "bot_user_id",
+              "type": "string"
+            },
+            "bot_access_token": {
+              "title": "bot_access_token",
+              "type": "string"
+            }
+          }
+        },
+        {
+          "name": "notify_header",
+          "title": "Notify When User",
+          "type": "string",
+          "format": "title"
+        },
+        {
+          "name": "send_create",
+          "title": "Is Created",
           "default": true,
           "type": "boolean",
           "format": "checkbox"
         },
         {
           "name": "send_update",
-          "title": "Notify on Update",
+          "title": "Is Updated",
           "default": true,
           "type": "boolean",
           "format": "checkbox"
         },
         {
-          "name": "channel",
-          "title": "Slack Channel",
-          "description": "Where to send notifications?. Default is the one specified in Slack settings",
-          "type": "string",
-          "format": "text"
-        },
-        {
-          "name": "send_to_named_channel",
-          "title": "Post to channel named as matching segment",
-          "default": false,
+          "name": "send_enter",
+          "title": "Enters a Segment",
+          "default": true,
           "type": "boolean",
           "format": "checkbox"
         },
         {
-          "name": "username",
-          "title": "Bot Name",
-          "description": "Change Bot name. Default is the one specified in Slack settings",
-          "default": "Hull",
-          "type": "string",
-          "format": "text"
-        },
-        {
-          "name": "icon_url",
-          "title": "Avatar",
-          "description": "Your bot's Avatar, Default is the one specified in Slack settings",
-          "type": "string",
-          "format": "image"
+          "name": "send_left",
+          "title": "Leaves a Segment",
+          "default": true,
+          "type": "boolean",
+          "format": "checkbox"
         }
       ],
       "deployment_settings": [],
@@ -510,7 +553,8 @@
       "tags": [
         "incoming",
         "outgoing",
-        "batch"
+        "batch",
+        "oneColumn"
       ],
       "private_settings": [
         {
@@ -552,6 +596,13 @@
             "type": "string"
           },
           "default": []
+        },
+        {
+          "name": "enrich_with_company",
+          "title": "Enrich with company information",
+          "description": "Fetch additional company information from Clearbit Enrichment API",
+          "type": "boolean",
+          "default": false
         },
         {
           "type": "string",
@@ -638,17 +689,6 @@
             "director",
             "manager"
           ]
-        },
-        {
-          "name": "prospect_titles",
-          "title": "Prospect Job title: ",
-          "description": "You can add multiple entries to search for multiple titles.",
-          "type": "array",
-          "default": [],
-          "items": {
-            "type": "string"
-          },
-          "format": "select"
         }
       ],
       "resources": [],
@@ -744,7 +784,8 @@
       "name": "Nutshell",
       "tags": [
         "outgoing",
-        "wideSettings"
+        "batch",
+        "oneColumn"
       ],
       "description": "Send Users as Leads or Contacts to Nutshell with custom mappings",
       "version": "0.1.0",
@@ -791,7 +832,7 @@
             "properties": {
               "hull": {
                 "type": "string",
-                "format": "trait",
+                "format": "template",
                 "title": "Hull Field"
               },
               "nutshell": {
@@ -812,6 +853,77 @@
           }
         }
       ],
+      "subscriptions": [
+        {
+          "url": "/notify"
+        }
+      ]
+    }
+  },
+  {
+    "url": "https://hull-mailchimp.herokuapp.com/manifest.json",
+    "manifest": {
+      "name": "Mailchimp",
+      "description": "Synchronize Segments as Mailchimp Lists",
+      "tags": [
+        "outgoing",
+        "batch"
+      ],
+      "picture": "picture.png",
+      "admin": "/auth/",
+      "version": "0.0.1",
+      "private_settings": [
+        {
+          "name": "synchronized_segments",
+          "title": "Filtered Segments",
+          "description": "Only sync users in at least one these segments (Empty to send everyone)",
+          "type": "array",
+          "format": "segment"
+        },
+        {
+          "name": "mailchimp_list_id",
+          "title": "Mailchimp List ID",
+          "description": "Mailchimp List ID selected by user",
+          "type": "string",
+          "format": "hidden"
+        },
+        {
+          "name": "mailchimp_list_name",
+          "title": "Mailchimp List Name",
+          "description": "Mailchimp List Name selected by user",
+          "type": "string",
+          "format": "hidden"
+        },
+        {
+          "name": "api_key",
+          "title": "API Key",
+          "description": "Token or API Key",
+          "type": "string",
+          "format": "hidden"
+        },
+        {
+          "name": "api_endpoint",
+          "title": "API Endpoint",
+          "description": "Mailchimp API endpoint",
+          "type": "string",
+          "format": "hidden"
+        },
+        {
+          "name": "domain",
+          "title": "API Domain",
+          "description": "Mailchimp API Domain",
+          "type": "string",
+          "format": "hidden"
+        },
+        {
+          "name": "segment_mapping",
+          "type": "object",
+          "properties": {},
+          "format": "hidden"
+        }
+      ],
+      "readme": "readme.md",
+      "ui": false,
       "subscriptions": [
         {
           "url": "/notify"
@@ -865,22 +977,15 @@
       "name": "Logger",
       "description": "Log updates passing through Hull",
       "tags": [
-        "outgoing"
+        "outgoing",
+        "oneColumn"
       ],
       "picture": "picture.png",
       "ui": false,
       "admin": "admin.html",
       "readme": "readme.md",
       "version": "0.0.1",
-      "private_settings": [
-        {
-          "name": "sentry_dsn",
-          "title": "Sentry DSN",
-          "description": "URL of a sentry instance to collect logs and exception notifications",
-          "type": "string",
-          "format": "hidden"
-        }
-      ],
+      "private_settings": [],
       "resources": [],
       "subscriptions": [
         {
