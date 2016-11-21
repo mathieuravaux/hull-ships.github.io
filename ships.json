@@ -7,7 +7,8 @@
       "tags": [
         "incoming",
         "outgoing",
-        "batch"
+        "batch",
+        "oneColumn"
       ],
       "index": "ship.js",
       "picture": "picture.png",
@@ -38,8 +39,8 @@
         },
         {
           "name": "synchronized_segments",
-          "title": "Filter users",
-          "description": "Only send Users matching one or more of these segments. Sends everyone if empty.",
+          "title": "Skips Users who don't belong to any of these segments",
+          "description": "Sends everyone if empty.",
           "type": "array",
           "format": "segment",
           "items": {
@@ -49,8 +50,8 @@
         },
         {
           "name": "synchronized_properties",
-          "title": "Properties sent to Segment.com",
-          "description": "Select User properties sent to Segment.com. Sends nothing if empty.",
+          "title": "Send Attributes to Segment.com",
+          "description": "Only sends list of user segments as 'hull_segments' attribute if empty.",
           "type": "array",
           "format": "trait",
           "items": {
@@ -59,9 +60,20 @@
           "default": []
         },
         {
+          "name": "send_events",
+          "title": "Send Events to Segment.com",
+          "description": "Sends everything if empty",
+          "type": "array",
+          "format": "event",
+          "default": [
+            "Entered segment",
+            "Left segment"
+          ]
+        },
+        {
           "name": "forward_events",
-          "title": "Forward Events received from Segment",
-          "description": "Re-send events we received from Segment.com. Use ONLY if Segment source and Destination are different.",
+          "title": "Allow forwarding events received from Segment.com",
+          "description": "Do NOT enable if Segment.com source and destination are the same. It could result in duplicates",
           "type": "boolean",
           "default": false
         }
@@ -189,11 +201,12 @@
       "name": "Salesforce",
       "tags": [
         "outgoing",
-        "wideSettings"
+        "wideSettings",
+        "batch"
       ],
       "description": "Send Users as Leads or Contacts to Salesforce with custom mappings",
       "readme": "readme.md",
-      "version": "0.1.1",
+      "version": "0.2.0",
       "picture": "picture.png",
       "ui": false,
       "settings": [],
@@ -215,11 +228,15 @@
           "default": "https://login.salesforce.com"
         },
         {
-          "name": "segment_id",
-          "type": "string",
-          "title": "Segment ID to sync",
-          "description": "Select a segment to sync with Salesforce. No value syncs everyone",
-          "format": "segment"
+          "name": "synchronized_segments",
+          "title": "Filter users",
+          "description": "Only send Users matching one or more of these segments. Sends everyone if empty.",
+          "type": "array",
+          "format": "segment",
+          "items": {
+            "type": "string"
+          },
+          "default": []
         },
         {
           "name": "leads_mapping",
@@ -344,23 +361,15 @@
     "manifest": {
       "name": "Slack",
       "description": "Notify a Slack Channel whenever a User enters or leaves a Segment",
+      "picture": "picture.png",
+      "version": "0.0.1",
       "tags": [
+        "incoming",
         "outgoing",
         "oneColumn"
       ],
-      "admin": "/auth/",
-      "picture": "picture.png",
-      "version": "0.0.1",
       "settings": [],
       "private_settings": [
-        {
-          "name": "synchronized_segments",
-          "title": "Segments",
-          "description": "Post to channel when users match these segments (Empty to send everyone)",
-          "default": [],
-          "type": "array",
-          "format": "segment"
-        },
         {
           "name": "token",
           "title": "Token",
@@ -421,42 +430,107 @@
         },
         {
           "name": "notify_header",
-          "title": "Notify When User",
+          "title": "Notifications",
           "type": "string",
           "format": "title"
         },
         {
-          "name": "send_create",
-          "title": "Is Created",
-          "default": true,
-          "type": "boolean",
-          "format": "checkbox"
+          "name": "notify_segments",
+          "title": "Notify on Segment update",
+          "type": "array",
+          "format": "table",
+          "items": {
+            "type": "object",
+            "required": [
+              "channel",
+              "segment"
+            ],
+            "properties": {
+              "segment": {
+                "title": "Segment",
+                "type": "string",
+                "format": "segment"
+              },
+              "channel": {
+                "title": "Channel Name",
+                "type": "string",
+                "format": "string"
+              },
+              "enter": {
+                "title": "Notify on enter",
+                "type": "boolean",
+                "format": "checkbox"
+              },
+              "leave": {
+                "title": "Notify on leave",
+                "type": "boolean",
+                "format": "checkbox"
+              }
+            }
+          }
         },
         {
-          "name": "send_update",
-          "title": "Is Updated",
-          "default": true,
-          "type": "boolean",
-          "format": "checkbox"
+          "name": "notify_events",
+          "title": "Notify on Event triggered",
+          "type": "array",
+          "format": "table",
+          "items": {
+            "type": "object",
+            "required": [
+              "channel",
+              "event"
+            ],
+            "properties": {
+              "event": {
+                "title": "Event Name",
+                "type": "string",
+                "format": "event"
+              },
+              "channel": {
+                "title": "Channel Name",
+                "type": "string",
+                "format": "string"
+              }
+            }
+          }
         },
         {
-          "name": "send_enter",
-          "title": "Enters a Segment",
-          "default": true,
-          "type": "boolean",
-          "format": "checkbox"
+          "name": "button_header",
+          "title": "Actions",
+          "type": "string",
+          "format": "title"
         },
         {
-          "name": "send_left",
-          "title": "Leaves a Segment",
+          "name": "actions",
+          "title": "Actions",
+          "description": "Add Action Buttons for updating User properties",
           "default": true,
-          "type": "boolean",
-          "format": "checkbox"
+          "type": "array",
+          "format": "table",
+          "items": {
+            "type": "object",
+            "properties": {
+              "label": {
+                "title": "Button Label",
+                "type": "string"
+              },
+              "property": {
+                "title": "Property name",
+                "type": "string",
+                "format": "trait"
+              },
+              "value": {
+                "title": "Property Value",
+                "type": "string"
+              }
+            }
+          }
         }
       ],
       "deployment_settings": [],
       "resources": [],
       "readme": "readme.md",
+      "admin": "/auth/",
       "ui": false,
       "subscriptions": [
         {
@@ -605,6 +679,13 @@
           "default": false
         },
         {
+          "name": "enable_reveal",
+          "title": "Enable Reveal",
+          "description": "Lookup anonymous visitors' Company info by IP Address",
+          "type": "boolean",
+          "default": false
+        },
+        {
           "type": "string",
           "format": "title",
           "name": "prospect_info",
@@ -708,7 +789,8 @@
       "description": "Send Hull Segments to Facebook Custom audiences",
       "tags": [
         "outgoing",
-        "batch"
+        "batch",
+        "oneColumn"
       ],
       "picture": "picture.png",
       "ui": false,
@@ -719,12 +801,14 @@
         {
           "name": "facebook_access_token",
           "title": "Facebook Access Token",
-          "type": "string"
+          "type": "string",
+          "format": "hidden"
         },
         {
           "name": "facebook_ad_account_id",
           "title": "Facebook Ad Account ID",
-          "type": "string"
+          "type": "string",
+          "format": "hidden"
         }
       ],
       "resources": [],
@@ -741,16 +825,26 @@
       "name": "Datanyze",
       "description": "Fetch additional customer data from Datanyze",
       "tags": [
-        "outgoing"
+        "outgoing",
+        "batch",
+        "oneColumn"
       ],
+      "admin": "/admin/",
       "picture": "picture.png",
       "ui": false,
       "readme": "readme.md",
       "version": "0.0.1",
       "private_settings": [
         {
+          "name": "target_trait",
+          "title": "Domain Lookup Field",
+          "description": "Choose which field to use to lookup a domain name",
+          "type": "string",
+          "format": "trait"
+        },
+        {
           "name": "excluded_domains",
-          "title": "Email Domain Excludes",
+          "title": "Domain Excludes",
           "description": "Domains to exclude from fetching. Comma Separated",
           "type": "string",
           "format": "text"
@@ -867,7 +961,9 @@
       "description": "Synchronize Segments as Mailchimp Lists",
       "tags": [
         "outgoing",
-        "batch"
+        "incoming",
+        "batch",
+        "oneColumn"
       ],
       "picture": "picture.png",
       "admin": "/auth/",
@@ -920,6 +1016,18 @@
           "type": "object",
           "properties": {},
           "format": "hidden"
+        },
+        {
+          "name": "interest_category_id",
+          "title": "Interest category ID",
+          "type": "string",
+          "format": "hidden"
+        },
+        {
+          "name": "interests_mapping",
+          "type": "object",
+          "properties": {},
+          "format": "hidden"
         }
       ],
       "readme": "readme.md",
@@ -927,6 +1035,13 @@
       "subscriptions": [
         {
           "url": "/notify"
+        }
+      ],
+      "schedules": [
+        {
+          "url": "/requestTrack",
+          "type": "cron",
+          "value": "7 */6 * * *"
         }
       ]
     }
@@ -939,7 +1054,8 @@
       "tags": [
         "incoming",
         "outgoing",
-        "batch"
+        "batch",
+        "oneColumn"
       ],
       "picture": "picture.png",
       "ui": false,
@@ -960,7 +1076,7 @@
           "description": "Enter Javascript code here, It will receive the data in the middle column, can emit `track()` and `traits()`. Preview results on the right. Save when finished",
           "type": "string",
           "default": "console.log(`Hello ${user.name}`);\n// traits({ coconuts: 12 });\n// traits({ coconuts: 13 });\n// traits({ coconuts: 14 }, { source: 'clearbit' });\n// //BEWARE - if you track() without a if() condition you trigger an infinite loop.\n// //if(false) { track('Viewed Monthy Python', { coconuts: 12 });}",
-          "format": "code"
+          "format": "hidden"
         }
       ],
       "resources": [],
@@ -990,6 +1106,245 @@
       "subscriptions": [
         {
           "url": "/notify"
+        }
+      ]
+    }
+  },
+  {
+    "url": "https://hull-hubspot.herokuapp.com/manifest.json",
+    "manifest": {
+      "name": "Hubspot",
+      "description": "Sync a Hubspot Channel whenever a User enters or leaves a Segment",
+      "picture": "picture.png",
+      "version": "0.0.1",
+      "tags": [
+        "outgoing",
+        "incoming",
+        "batch",
+        "oneColumn"
+      ],
+      "settings": [],
+      "private_settings": [
+        {
+          "name": "synchronized_segments",
+          "title": "Segments",
+          "description": "Post to Hubspot when users match these segments (Empty to send everyone)",
+          "default": [],
+          "type": "array",
+          "format": "segment"
+        },
+        {
+          "name": "sync_fields_to_hubspot",
+          "title": "Custom Fields Sync (Hull to Hubspot)",
+          "type": "array",
+          "format": "trait"
+        },
+        {
+          "name": "sync_fields_to_hull",
+          "title": "Custom Fields Sync (Hubspot to Hull)",
+          "type": "array",
+          "format": "table",
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "title": "Hubspot Field ID",
+                "type": "string",
+                "format": "string"
+              },
+              "hull": {
+                "title": "Hull Field ID",
+                "type": "string",
+                "format": "trait",
+                "options": {
+                  "placeholder": "Enter a Hull field id",
+                  "allowCreate": true,
+                  "source": "hubspot"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "token",
+          "title": "Token",
+          "type": "string",
+          "format": "hidden"
+        },
+        {
+          "name": "portal_id",
+          "title": "Portal ID",
+          "type": "string",
+          "format": "hidden"
+        },
+        {
+          "name": "refresh_token",
+          "title": "RefreshToken",
+          "type": "string",
+          "format": "hidden"
+        },
+        {
+          "name": "last_fetch_started_at",
+          "description": "Last time fetched at operation was started",
+          "type": "string",
+          "format": "hidden"
+        },
+        {
+          "name": "fetch_count",
+          "description": "Count of contacts already fetched from Hubspot",
+          "type": "number",
+          "format": "hidden"
+        },
+        {
+          "name": "is_fetch_completed",
+          "type": "boolean",
+          "default": false,
+          "format": "hidden"
+        }
+      ],
+      "deployment_settings": [],
+      "resources": [],
+      "readme": "readme.md",
+      "admin": "/auth/",
+      "ui": false,
+      "subscriptions": [
+        {
+          "url": "/notify"
+        }
+      ],
+      "schedules": [
+        {
+          "url": "/sync",
+          "type": "cron",
+          "value": "*/5 * * * *"
+        },
+        {
+          "url": "/monitor/checkToken",
+          "type": "cron",
+          "value": "*/5 * * * *"
+        }
+      ]
+    }
+  },
+  {
+    "url": "https://hull-intercom.herokuapp.com/manifest.json",
+    "manifest": {
+      "name": "Intercom",
+      "description": "Sync a Intercom Tag whenever a User enters or leaves a Segment",
+      "tags": [
+        "outgoing",
+        "incoming",
+        "batch",
+        "oneColumn"
+      ],
+      "admin": "/auth/",
+      "picture": "picture.png",
+      "version": "0.0.1",
+      "settings": [],
+      "private_settings": [
+        {
+          "name": "synchronized_segments",
+          "title": "Segments",
+          "description": "Post to Intercom when users match these segments (Empty to send everyone)",
+          "default": [],
+          "type": "array",
+          "format": "segment"
+        },
+        {
+          "name": "access_token",
+          "title": "Access Token",
+          "type": "string",
+          "format": "hidden"
+        },
+        {
+          "name": "webhook_id",
+          "title": "Intercom webhook id",
+          "type": "string",
+          "format": "hidden"
+        },
+        {
+          "name": "last_fetch_started_at",
+          "description": "Last time fetched at operation was started",
+          "type": "string",
+          "format": "hidden"
+        },
+        {
+          "name": "fetch_count",
+          "description": "Count of contacts already fetched from Intercom",
+          "type": "number",
+          "format": "hidden"
+        },
+        {
+          "name": "is_fetch_completed",
+          "type": "boolean",
+          "default": false,
+          "format": "hidden"
+        },
+        {
+          "name": "sync_fields_to_intercom",
+          "title": "List of User fields to push to Intercom",
+          "type": "array",
+          "format": "table",
+          "default": [],
+          "items": {
+            "type": "object",
+            "properties": {
+              "hull": {
+                "type": "string",
+                "format": "trait",
+                "title": "Hull Field"
+              },
+              "name": {
+                "type": "string",
+                "title": "Intercom Field"
+              }
+            },
+            "required": [
+              "hull",
+              "name"
+            ]
+          }
+        },
+        {
+          "name": "sync_fields_to_hull",
+          "title": "List of User custom attributes to fetch from Intercom",
+          "type": "array",
+          "format": "table",
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string",
+                "title": "Intercom Field"
+              },
+              "hull": {
+                "type": "string",
+                "format": "trait",
+                "title": "Hull Field",
+                "allowCreate": true
+              }
+            },
+            "required": [
+              "name",
+              "hull"
+            ]
+          }
+        }
+      ],
+      "deployment_settings": [],
+      "resources": [],
+      "readme": "readme.md",
+      "ui": false,
+      "subscriptions": [
+        {
+          "url": "/notify"
+        }
+      ],
+      "schedules": [
+        {
+          "url": "/sync",
+          "type": "cron",
+          "value": "*/5 * * * *"
         }
       ]
     }
