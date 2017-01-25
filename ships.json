@@ -201,31 +201,37 @@
       "name": "Salesforce",
       "tags": [
         "outgoing",
-        "wideSettings",
+        "oneColumn",
         "batch"
       ],
       "description": "Send Users as Leads or Contacts to Salesforce with custom mappings",
       "readme": "readme.md",
+      "admin": "/auth",
       "version": "0.2.0",
       "picture": "picture.png",
       "ui": false,
-      "settings": [],
+      "settings": [
+        {
+          "name": "last_sync_at",
+          "type": "number",
+          "format": "hidden"
+        }
+      ],
       "private_settings": [
         {
-          "name": "salesforce_login",
+          "name": "refresh_token",
           "type": "string",
-          "required": true
+          "format": "hidden"
         },
         {
-          "name": "salesforce_password",
+          "name": "access_token",
           "type": "string",
-          "required": true
+          "format": "hidden"
         },
         {
-          "name": "salesforce_login_url",
+          "name": "instance_url",
           "type": "string",
-          "required": true,
-          "default": "https://login.salesforce.com"
+          "format": "hidden"
         },
         {
           "name": "synchronized_segments",
@@ -239,9 +245,16 @@
           "default": []
         },
         {
+          "name": "leads",
+          "title": "Leads sync",
+          "format": "title",
+          "type": "string"
+        },
+        {
           "name": "leads_mapping",
-          "title": "Leads",
+          "title": "List of Lead fields to push to Salesforce",
           "type": "array",
+          "format": "table",
           "default": [
             {
               "hull_field_name": "first_name",
@@ -271,20 +284,16 @@
               },
               "salesforce_field_name": {
                 "type": "string",
-                "title": "Salesforce Field"
+                "title": "Salesforce Field",
+                "format": "select",
+                "options": {
+                  "loadOptions": "/schema/lead_updateable"
+                }
               },
               "overwrite": {
                 "type": "boolean",
-                "title": "Hull overwrites Salesforce",
+                "title": "overwrite",
                 "default": false
-              },
-              "default_value": {
-                "type": "string",
-                "title": "Default Value"
-              },
-              "tpl": {
-                "type": "string",
-                "title": "Template for calculated value"
               }
             },
             "required": [
@@ -294,9 +303,25 @@
           }
         },
         {
-          "name": "contacts_mapping",
-          "title": "Contact",
+          "name": "fetch_lead_fields",
+          "title": "List of Lead fields to fetch from Salesforce",
           "type": "array",
+          "format": "select",
+          "options": {
+            "loadOptions": "/schema/lead"
+          }
+        },
+        {
+          "name": "contacts",
+          "title": "Contacts sync",
+          "format": "title",
+          "type": "string"
+        },
+        {
+          "name": "contacts_mapping",
+          "title": "List of Contact fields to push to Salesforce",
+          "type": "array",
+          "format": "table",
           "default": [
             {
               "hull_field_name": "first_name",
@@ -326,20 +351,16 @@
               },
               "salesforce_field_name": {
                 "type": "string",
-                "title": "Salesforce Field"
+                "title": "Salesforce Field",
+                "format": "select",
+                "options": {
+                  "loadOptions": "/schema/contact_updateable"
+                }
               },
               "overwrite": {
                 "type": "boolean",
                 "title": "Hull overwrites Salesforce",
                 "default": false
-              },
-              "default_value": {
-                "type": "string",
-                "title": "Default Value"
-              },
-              "tpl": {
-                "type": "string",
-                "title": "Template for calculated value"
               }
             },
             "required": [
@@ -347,6 +368,22 @@
               "salesforce_field_name"
             ]
           }
+        },
+        {
+          "name": "fetch_contact_fields",
+          "title": "List of Contact fields to fetch from Salesforce",
+          "type": "array",
+          "format": "select",
+          "options": {
+            "loadOptions": "/schema/contact"
+          }
+        }
+      ],
+      "schedules": [
+        {
+          "url": "/sync",
+          "type": "cron",
+          "value": "*/5 * * * *"
         }
       ],
       "subscriptions": [
@@ -429,6 +466,13 @@
           }
         },
         {
+          "name": "whitelist",
+          "title": "Displayed Attributes (none displays everything)",
+          "type": "array",
+          "default": [],
+          "format": "trait"
+        },
+        {
           "name": "notify_header",
           "title": "Notifications",
           "type": "string",
@@ -436,9 +480,15 @@
         },
         {
           "name": "notify_segments",
-          "title": "Notify on Segment update",
+          "title": "Notify when User enters or leaves segment",
           "type": "array",
           "format": "table",
+          "default": [
+            {
+              "segment": "",
+              "channel": ""
+            }
+          ],
           "items": {
             "type": "object",
             "required": [
@@ -447,7 +497,7 @@
             ],
             "properties": {
               "segment": {
-                "title": "Segment",
+                "title": "Segment Name",
                 "type": "string",
                 "format": "segment"
               },
@@ -471,9 +521,15 @@
         },
         {
           "name": "notify_events",
-          "title": "Notify on Event triggered",
+          "title": "Notify when user performs Event",
           "type": "array",
           "format": "table",
+          "default": [
+            {
+              "event": "",
+              "channel": ""
+            }
+          ],
           "items": {
             "type": "object",
             "required": [
@@ -502,9 +558,14 @@
         },
         {
           "name": "actions",
-          "title": "Actions",
-          "description": "Add Action Buttons for updating User properties",
-          "default": true,
+          "title": "Add Action Buttons to update User attributes on click",
+          "default": [
+            {
+              "label": "",
+              "property": "",
+              "value": ""
+            }
+          ],
           "type": "array",
           "format": "table",
           "items": {
@@ -563,7 +624,7 @@
         {
           "name": "synchronized_segments",
           "title": "Filtered Segments",
-          "description": "Only trigger if user matches at least one these segments (Empty to send everyone)",
+          "description": "Only trigger if user matches at least one these segments",
           "default": [],
           "type": "array",
           "format": "segment"
@@ -624,6 +685,7 @@
       "description": "Fetch additional customer data from Clearbit",
       "picture": "picture.png",
       "version": "0.0.3",
+      "admin": "admin.html",
       "tags": [
         "incoming",
         "outgoing",
@@ -634,23 +696,13 @@
         {
           "type": "string",
           "format": "title",
-          "name": "config_info",
-          "title": "Configuration"
-        },
-        {
-          "name": "excluded_domains",
-          "title": "Email Domain Excludes",
-          "description": "Domains to exclude from fetching.",
-          "type": "array",
-          "items": {
-            "type": "string"
-          },
-          "format": "domains"
+          "name": "credentials",
+          "title": "Credentials"
         },
         {
           "name": "api_key",
           "title": "Clearbit API Key",
-          "description": "Clearbit API Key, found in https://dashboard.clearbit.com/keys",
+          "description": "Get it from https://dashboard.clearbit.com/keys",
           "type": "string",
           "format": "text"
         },
@@ -658,12 +710,19 @@
           "type": "string",
           "format": "title",
           "name": "enrich_info",
-          "title": "Enrichment"
+          "title": "Enrichment",
+          "description": "The Enrichment API lets you look up person and company data based on an email or domain"
+        },
+        {
+          "name": "enrich_enabled",
+          "title": "Enable Enrichment",
+          "description": "Enrich users with their user and company information",
+          "type": "boolean",
+          "default": true
         },
         {
           "name": "enrich_segments",
-          "title": "Filter",
-          "description": "Only enrich users who match these segments.",
+          "title": "Enrich users only if they match any of these segments",
           "type": "array",
           "format": "segment",
           "items": {
@@ -672,35 +731,52 @@
           "default": []
         },
         {
-          "name": "enrich_with_company",
-          "title": "Enrich with company information",
-          "description": "Fetch additional company information from Clearbit Enrichment API",
-          "type": "boolean",
-          "default": false
+          "type": "string",
+          "format": "title",
+          "name": "reveal",
+          "title": "Reveal"
         },
         {
-          "name": "enable_reveal",
+          "name": "reveal_enabled",
           "title": "Enable Reveal",
-          "description": "Lookup anonymous visitors' Company info by IP Address",
+          "description": "Reveal anonymous visitors' company information",
           "type": "boolean",
           "default": false
         },
         {
           "type": "string",
-          "format": "title",
-          "name": "prospect_info",
-          "title": "Similar Lead Discovery"
+          "format": "information",
+          "name": "reveal_information",
+          "description": "Reveal setup",
+          "headerTemplate": "For Reveal to operate, you need to enable **Guest Users** from your [Dashboard Settings](../../settings)"
         },
         {
-          "name": "enable_prospect",
-          "title": "Enable similar lead discovery",
+          "name": "reveal_prospect_min_contacts",
+          "title": "Minimum distinct anonymous visitors from a company to trigger prospection",
+          "type": "number",
+          "format": "range",
+          "default": 1,
+          "minimum": 1,
+          "maximum": 10,
+          "multipleOf": 1
+        },
+        {
+          "type": "string",
+          "format": "title",
+          "name": "discovery_info",
+          "title": "Discovery",
+          "description": "The Discovery API lets you search for companies that are similar to your existing customers."
+        },
+        {
+          "name": "discover_enabled",
+          "title": "Enable Discovery",
+          "description": "Search for companies similar to the ones you are interested in",
           "type": "boolean",
           "default": false
         },
         {
-          "name": "prospect_segments",
-          "title": "Filter",
-          "description": "Search for similar leads for users who enter these segments",
+          "name": "discover_segments",
+          "title": "Search for companies similar to users who match any of these segments",
           "type": "array",
           "format": "segment",
           "items": {
@@ -709,8 +785,8 @@
           "default": []
         },
         {
-          "name": "limit_companies",
-          "title": "Max number of companies to fetch",
+          "name": "discover_limit_count",
+          "title": "Maximum number of companies to fetch",
           "type": "number",
           "format": "range",
           "default": 5,
@@ -719,8 +795,38 @@
           "multipleOf": 1
         },
         {
-          "name": "limit_prospects",
-          "title": "Max number of prospects to fetch per company",
+          "type": "string",
+          "format": "title",
+          "name": "prospect_info",
+          "title": "Prospector"
+        },
+        {
+          "name": "prospect_enabled",
+          "title": "Enable Prospector",
+          "description": "Search for people in companies you Revealed or Discovered",
+          "type": "boolean",
+          "default": false
+        },
+        {
+          "name": "prospect_domain",
+          "title": "Search using company domain",
+          "type": "string",
+          "format": "trait",
+          "default": "domain"
+        },
+        {
+          "name": "prospect_segments",
+          "title": "Automatically fetch prospects for companies who match any of these segments",
+          "type": "array",
+          "format": "segment",
+          "items": {
+            "type": "string"
+          },
+          "default": []
+        },
+        {
+          "name": "prospect_limit_count",
+          "title": "Maximum number of prospects to fetch per company",
           "type": "number",
           "format": "range",
           "default": 5,
@@ -729,10 +835,10 @@
           "multipleOf": 1
         },
         {
-          "name": "prospect_role",
-          "title": "Prospect Role: ",
-          "description": "Get prospects with role",
+          "name": "prospect_filter_role",
+          "title": "Prospect Role",
           "type": "string",
+          "format": "select",
           "enum": [
             "",
             "ceo",
@@ -760,10 +866,10 @@
           ]
         },
         {
-          "name": "prospect_seniority",
-          "title": "Prospect Seniority: ",
-          "description": "Get prospects with seniority: ",
+          "name": "prospect_filter_seniority",
+          "title": "Prospect Seniority",
           "type": "string",
+          "format": "select",
           "enum": [
             "",
             "executive",
@@ -1028,6 +1134,52 @@
           "type": "object",
           "properties": {},
           "format": "hidden"
+        },
+        {
+          "name": "sync_fields_to_mailchimp",
+          "title": "List of User attributes to push to Mailchimp",
+          "type": "array",
+          "format": "table",
+          "default": [
+            {
+              "hull": "first_name",
+              "name": "FNAME",
+              "overwrite": true
+            },
+            {
+              "hull": "last_name",
+              "name": "LNAME",
+              "overwrite": true
+            }
+          ],
+          "items": {
+            "type": "object",
+            "properties": {
+              "hull": {
+                "type": "string",
+                "format": "trait",
+                "title": "Hull Attribute"
+              },
+              "name": {
+                "type": "string",
+                "format": "select",
+                "title": "Mailchimp Merge Field",
+                "options": {
+                  "allowCreate": false,
+                  "loadOptions": "/schema/user_fields"
+                }
+              },
+              "overwrite": {
+                "type": "boolean",
+                "title": "Hull overwrites Mailchimp",
+                "default": false
+              }
+            },
+            "required": [
+              "hull",
+              "name"
+            ]
+          }
         }
       ],
       "readme": "readme.md",
@@ -1039,7 +1191,7 @@
       ],
       "schedules": [
         {
-          "url": "/requestTrack",
+          "url": "/track",
           "type": "cron",
           "value": "7 */6 * * *"
         }
@@ -1116,7 +1268,7 @@
       "name": "Hubspot",
       "description": "Sync a Hubspot Channel whenever a User enters or leaves a Segment",
       "picture": "picture.png",
-      "version": "0.0.1",
+      "version": "0.0.4",
       "tags": [
         "outgoing",
         "incoming",
@@ -1230,7 +1382,7 @@
     "url": "https://hull-intercom.herokuapp.com/manifest.json",
     "manifest": {
       "name": "Intercom",
-      "description": "Sync a Intercom Tag whenever a User enters or leaves a Segment",
+      "description": "Sync Users in Intercom with Hull",
       "tags": [
         "outgoing",
         "incoming",
@@ -1239,7 +1391,7 @@
       ],
       "admin": "/auth/",
       "picture": "picture.png",
-      "version": "0.0.1",
+      "version": "0.2.4",
       "settings": [],
       "private_settings": [
         {
@@ -1281,8 +1433,26 @@
           "format": "hidden"
         },
         {
+          "name": "send_events_enabled",
+          "title": "Enable sending events",
+          "description": "Allow sending events to Intercom",
+          "type": "boolean",
+          "default": false
+        },
+        {
+          "name": "send_events",
+          "title": "Events to send",
+          "description": "Send following Events to Intercom. Empty sends nothing.",
+          "format": "event",
+          "type": "array",
+          "default": [
+            "Entered segment",
+            "Left segment"
+          ]
+        },
+        {
           "name": "sync_fields_to_intercom",
-          "title": "List of User fields to push to Intercom",
+          "title": "List of User attributes to push to Intercom",
           "type": "array",
           "format": "table",
           "default": [],
@@ -1292,11 +1462,21 @@
               "hull": {
                 "type": "string",
                 "format": "trait",
-                "title": "Hull Field"
+                "title": "Hull Attribute"
               },
               "name": {
                 "type": "string",
-                "title": "Intercom Field"
+                "format": "select",
+                "title": "Intercom Attribute",
+                "options": {
+                  "allowCreate": true,
+                  "loadOptions": "/schema/user_fields"
+                }
+              },
+              "overwrite": {
+                "type": "boolean",
+                "title": "Hull overwrites Intercom",
+                "default": false
               }
             },
             "required": [
@@ -1310,18 +1490,26 @@
           "title": "List of User custom attributes to fetch from Intercom",
           "type": "array",
           "format": "table",
+          "default": [],
           "items": {
             "type": "object",
             "properties": {
               "name": {
                 "type": "string",
-                "title": "Intercom Field"
+                "format": "select",
+                "title": "Intercom Attributes",
+                "options": {
+                  "allowCreate": true,
+                  "loadOptions": "/schema/user_fields"
+                }
               },
               "hull": {
                 "type": "string",
                 "format": "trait",
-                "title": "Hull Field",
-                "allowCreate": true
+                "title": "Hull Attributes",
+                "options": {
+                  "allowCreate": true
+                }
               }
             },
             "required": [
@@ -1345,6 +1533,115 @@
           "url": "/sync",
           "type": "cron",
           "value": "*/5 * * * *"
+        }
+      ]
+    }
+  },
+  {
+    "url": "https://hull-sql.herokuapp.com/manifest.json",
+    "manifest": {
+      "name": "SQL Importer",
+      "description": "Import SQL data from your own database",
+      "picture": "picture.png",
+      "version": "0.0.1",
+      "tags": [
+        "incoming",
+        "oneColumn"
+      ],
+      "private_settings": [
+        {
+          "name": "enabled",
+          "title": "Enable Sync",
+          "type": "boolean",
+          "default": "false"
+        },
+        {
+          "name": "overwrite",
+          "title": "Overwrite data in Hull in case of a conflict",
+          "type": "boolean",
+          "default": "true"
+        },
+        {
+          "type": "string",
+          "format": "title",
+          "name": "db_info",
+          "title": "Database connection"
+        },
+        {
+          "name": "db_type",
+          "type": "string",
+          "title": "Type",
+          "enum": [
+            "postgres",
+            "mysql"
+          ],
+          "default": "postgres",
+          "required": true
+        },
+        {
+          "name": "db_host",
+          "type": "string",
+          "title": "Host Name",
+          "required": true
+        },
+        {
+          "name": "db_port",
+          "type": "string",
+          "title": "Port",
+          "required": true
+        },
+        {
+          "name": "db_name",
+          "type": "string",
+          "title": "Database",
+          "required": true
+        },
+        {
+          "name": "db_user",
+          "type": "string",
+          "title": "Usernane",
+          "required": true
+        },
+        {
+          "name": "db_password",
+          "type": "string",
+          "title": "Password",
+          "required": true
+        },
+        {
+          "name": "query",
+          "title": "Query to run",
+          "type": "string",
+          "format": "hidden"
+        },
+        {
+          "name": "last_sync_at",
+          "title": "Last sync",
+          "type": "string",
+          "format": "hidden"
+        },
+        {
+          "name": "last_updated_at",
+          "title": "Last updated_at",
+          "type": "string",
+          "format": "hidden"
+        },
+        {
+          "name": "last_job_id",
+          "title": "Last job ID",
+          "type": "string",
+          "format": "hidden"
+        }
+      ],
+      "resources": [],
+      "readme": "readme.md",
+      "admin": "admin.html",
+      "ui": false,
+      "schedules": [
+        {
+          "url": "/sync",
+          "type": "cron",
+          "value": "0 */3 * * *"
         }
       ]
     }
