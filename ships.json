@@ -685,7 +685,6 @@
       "description": "Fetch additional customer data from Clearbit",
       "picture": "picture.png",
       "version": "0.0.3",
-      "admin": "admin.html",
       "tags": [
         "incoming",
         "outgoing",
@@ -876,10 +875,24 @@
             "director",
             "manager"
           ]
+        },
+        {
+          "name": "prospect_filter_titles",
+          "title": "Prospect Titles",
+          "type": "array",
+          "items": {
+            "title": "Title",
+            "type": "string"
+          },
+          "format": "select",
+          "options": {
+            "allowCreate": true
+          }
         }
       ],
       "resources": [],
       "readme": "readme.md",
+      "admin": "admin.html",
       "ui": false,
       "subscriptions": [
         {
@@ -939,14 +952,23 @@
       "picture": "picture.png",
       "ui": false,
       "readme": "readme.md",
-      "version": "0.0.1",
+      "version": "0.1.0",
       "private_settings": [
+        {
+          "name": "synchronized_segments",
+          "title": "Filtered Segments",
+          "description": "Only send if user matches one of these segments. Empty sends no one.",
+          "default": [],
+          "type": "array",
+          "format": "segment"
+        },
         {
           "name": "target_trait",
           "title": "Domain Lookup Field",
           "description": "Choose which field to use to lookup a domain name",
           "type": "string",
-          "format": "trait"
+          "format": "trait",
+          "default": "domain"
         },
         {
           "name": "excluded_domains",
@@ -1073,7 +1095,7 @@
       ],
       "picture": "picture.png",
       "admin": "/auth/",
-      "version": "0.0.1",
+      "version": "0.2.2",
       "private_settings": [
         {
           "name": "synchronized_segments",
@@ -1268,7 +1290,7 @@
       "name": "Hubspot",
       "description": "Sync a Hubspot Channel whenever a User enters or leaves a Segment",
       "picture": "picture.png",
-      "version": "0.0.4",
+      "version": "0.2.5",
       "tags": [
         "outgoing",
         "incoming",
@@ -1289,7 +1311,34 @@
           "name": "sync_fields_to_hubspot",
           "title": "Custom Fields Sync (Hull to Hubspot)",
           "type": "array",
-          "format": "trait"
+          "format": "table",
+          "items": {
+            "type": "object",
+            "properties": {
+              "hull": {
+                "title": "Hull Field ID",
+                "type": "string",
+                "format": "trait",
+                "options": {
+                  "placeholder": "Enter a Hull field id"
+                }
+              },
+              "name": {
+                "title": "Hubspot Field ID",
+                "type": "string",
+                "format": "select",
+                "options": {
+                  "allowCreate": true,
+                  "loadOptions": "/schema/contact_properties"
+                }
+              },
+              "overwrite": {
+                "type": "boolean",
+                "title": "Hull overwrites Hubspot",
+                "default": false
+              }
+            }
+          }
         },
         {
           "name": "sync_fields_to_hull",
@@ -1302,7 +1351,11 @@
               "name": {
                 "title": "Hubspot Field ID",
                 "type": "string",
-                "format": "string"
+                "format": "select",
+                "options": {
+                  "allowCreate": false,
+                  "loadOptions": "/schema/contact_properties"
+                }
               },
               "hull": {
                 "title": "Hull Field ID",
@@ -1391,7 +1444,7 @@
       ],
       "admin": "/auth/",
       "picture": "picture.png",
-      "version": "0.2.4",
+      "version": "0.3.1",
       "settings": [],
       "private_settings": [
         {
@@ -1499,7 +1552,6 @@
                 "format": "select",
                 "title": "Intercom Attributes",
                 "options": {
-                  "allowCreate": true,
                   "loadOptions": "/schema/user_fields"
                 }
               },
@@ -1508,7 +1560,8 @@
                 "format": "trait",
                 "title": "Hull Attributes",
                 "options": {
-                  "allowCreate": true
+                  "allowCreate": true,
+                  "source": "intercom"
                 }
               }
             },
@@ -1642,6 +1695,107 @@
           "url": "/sync",
           "type": "cron",
           "value": "0 */3 * * *"
+        }
+      ]
+    }
+  },
+  {
+    "url": "https://hull-webhooks.herokuapp.com/manifest.json",
+    "manifest": {
+      "name": "Webhooks",
+      "description": "Send Hull Users updates as Webhooks",
+      "tags": [
+        "outgoing",
+        "oneColumn",
+        "batch"
+      ],
+      "picture": "picture.png",
+      "version": "0.2.1",
+      "private_settings": [
+        {
+          "name": "webhooks_urls",
+          "title": "Webhooks URLs",
+          "default": [
+            "https://example.com.com/webhooks/"
+          ],
+          "type": "array",
+          "format": "table",
+          "items": {
+            "type": "string"
+          }
+        },
+        {
+          "name": "synchronized_segments",
+          "title": "Filtered Segments",
+          "description": "Global filter. Only send if user matches one of these segments",
+          "default": [],
+          "type": "array",
+          "format": "segment"
+        },
+        {
+          "name": "webhooks_header",
+          "title": "Send conditions",
+          "type": "string",
+          "format": "title"
+        },
+        {
+          "name": "webhooks_segments",
+          "title": "Send User when Segments changes",
+          "type": "array",
+          "format": "table",
+          "default": [
+            {
+              "segment": "",
+              "channel": ""
+            }
+          ],
+          "items": {
+            "type": "object",
+            "required": [
+              "channel",
+              "segment"
+            ],
+            "properties": {
+              "segment": {
+                "title": "Segment Name",
+                "type": "string",
+                "format": "segment"
+              },
+              "entered": {
+                "title": "Send on enter",
+                "type": "boolean",
+                "format": "checkbox"
+              },
+              "left": {
+                "title": "Send on leave",
+                "type": "boolean",
+                "format": "checkbox"
+              }
+            }
+          }
+        },
+        {
+          "name": "webhooks_attributes",
+          "title": "Send User when attributes change",
+          "default": [],
+          "type": "array",
+          "format": "trait"
+        },
+        {
+          "name": "webhooks_events",
+          "title": "Send User when events performed",
+          "default": [],
+          "type": "array",
+          "format": "event"
+        }
+      ],
+      "deployment_settings": [],
+      "resources": [],
+      "readme": "readme.md",
+      "ui": false,
+      "subscriptions": [
+        {
+          "url": "/notify"
         }
       ]
     }
