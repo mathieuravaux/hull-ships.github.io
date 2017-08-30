@@ -229,7 +229,7 @@
       "description": "Enrich your Leads and Contacts in Salesforce and Trigger Powerful Workflows",
       "readme": "readme.md",
       "admin": "/auth",
-      "version": "0.2.6",
+      "version": "0.2.9",
       "picture": "picture.png",
       "ui": false,
       "settings": [
@@ -425,6 +425,11 @@
           "url": "/sync",
           "type": "cron",
           "value": "*/5 * * * *"
+        },
+        {
+          "url": "/status",
+          "type": "cron",
+          "value": "*/30 * * * *"
         }
       ],
       "subscriptions": [
@@ -642,41 +647,12 @@
     }
   },
   {
-    "url": "https://hull-instagram.herokuapp.com/manifest.json",
-    "manifest": {
-      "name": "Instagram",
-      "description": "Store Instagram new picture as Hull Events",
-      "picture": "picture.png",
-      "key": "instagram",
-      "version": "0.0.1",
-      "settings": [],
-      "private_settings": [
-        {
-          "name": "subscription_id",
-          "title": "Webhook subscription id",
-          "type": "string",
-          "default": "",
-          "format": "hidden"
-        }
-      ],
-      "deployment_settings": [],
-      "resources": [],
-      "readme": "readme.md",
-      "ui": false,
-      "subscriptions": [
-        {
-          "url": "/notify"
-        }
-      ]
-    }
-  },
-  {
     "url": "https://hull-clearbit.herokuapp.com/manifest.json",
     "manifest": {
       "name": "Clearbit",
       "description": "Reveal anonymous users from your website and enrich them with the data you need",
       "picture": "picture.png",
-      "version": "0.2.0",
+      "version": "0.2.2",
       "tags": [
         "incoming",
         "outgoing",
@@ -1203,7 +1179,7 @@
       ],
       "picture": "picture.png",
       "admin": "/auth/",
-      "version": "0.3.1",
+      "version": "0.3.2",
       "private_settings": [
         {
           "name": "synchronized_segments",
@@ -1370,29 +1346,6 @@
     }
   },
   {
-    "url": "https://hull-logger.herokuapp.com/manifest.json",
-    "manifest": {
-      "name": "Logger",
-      "description": "Log updates passing through Hull",
-      "tags": [
-        "outgoing",
-        "oneColumn"
-      ],
-      "picture": "picture.png",
-      "ui": false,
-      "admin": "admin.html",
-      "readme": "readme.md",
-      "version": "0.0.1",
-      "private_settings": [],
-      "resources": [],
-      "subscriptions": [
-        {
-          "url": "/notify"
-        }
-      ]
-    }
-  },
-  {
     "url": "https://hull-hubspot.herokuapp.com/manifest.json",
     "manifest": {
       "name": "Hubspot",
@@ -1543,7 +1496,7 @@
     "url": "https://hull-intercom.herokuapp.com/manifest.json",
     "manifest": {
       "name": "Intercom",
-      "description": "Sync Leads and Users in Intercom with Hull",
+      "description": "Supercharge your engagement in Intercom",
       "tags": [
         "outgoing",
         "incoming",
@@ -1553,17 +1506,9 @@
       "index": "ship.js",
       "admin": "/auth/",
       "picture": "picture.png",
-      "version": "0.7.14",
+      "version": "0.7.21",
       "settings": [],
       "private_settings": [
-        {
-          "name": "synchronized_segments",
-          "title": "Segments",
-          "description": "Post to Intercom when users match these segments",
-          "default": [],
-          "type": "array",
-          "format": "segment"
-        },
         {
           "name": "access_token",
           "title": "Access Token",
@@ -1595,26 +1540,34 @@
           "format": "hidden"
         },
         {
-          "name": "send_events_enabled",
-          "title": "Enable sending events",
-          "description": "Allow sending events to Intercom",
-          "type": "boolean",
-          "default": false
+          "type": "string",
+          "format": "title",
+          "name": "connector_info",
+          "title": "Connector Configuration"
         },
         {
-          "name": "send_events",
-          "title": "Events to send",
-          "description": "Send following Events to Intercom. Empty sends nothing.",
-          "format": "event",
+          "name": "synchronized_segments",
+          "title": "Send users to Intercom when belonging to one of these segments",
+          "default": [],
           "type": "array",
-          "default": [
-            "Entered segment",
-            "Left segment"
-          ]
+          "format": "segment"
+        },
+        {
+          "name": "synchronized_segments_hero",
+          "type": "string",
+          "headerTemplate": "The above list of segments is a whitelist. You need to *explicitely specify one or more segments* for which events and users shall be sent to Intercom.<br>If you do not specify any segment, no user or event will be sent to Intercom.",
+          "format": "information",
+          "title": "Whitelisted Segments"
+        },
+        {
+          "type": "string",
+          "format": "title",
+          "name": "sync_fields_out_info",
+          "title": "Outgoing Attributes (Hull to Intercom)"
         },
         {
           "name": "sync_fields_to_intercom",
-          "title": "List of User attributes to push to Intercom",
+          "title": "List of attributes to send to Intercom",
           "type": "array",
           "format": "table",
           "default": [],
@@ -1648,8 +1601,21 @@
           }
         },
         {
+          "type": "string",
+          "format": "title",
+          "name": "sync_fields_in_info",
+          "title": "Incoming Attributes (Intercom to Hull)"
+        },
+        {
+          "name": "sync_fields_in_hero",
+          "type": "string",
+          "headerTemplate": "Hull fetches all standard attributes from Intercom by default. If you have custom attributes, please list them below to synchronize the data with Hull.",
+          "format": "information",
+          "title": "Custom attributes only"
+        },
+        {
           "name": "sync_fields_to_hull",
-          "title": "List of User custom attributes to fetch from Intercom",
+          "title": "List of custom attributes to fetch from Intercom",
           "type": "array",
           "format": "table",
           "default": [],
@@ -1679,6 +1645,29 @@
               "hull"
             ]
           }
+        },
+        {
+          "type": "string",
+          "format": "title",
+          "name": "send_events_info",
+          "title": "Event Handling"
+        },
+        {
+          "name": "send_events",
+          "title": "Sends these events to Intercom",
+          "format": "event",
+          "type": "array",
+          "default": [
+            "Entered segment",
+            "Left segment"
+          ]
+        },
+        {
+          "name": "send_events_hero",
+          "type": "string",
+          "headerTemplate": "The above list of events is a whitelist. You need to *explicitely specify one or more events* that shall be sent to Intercom.<br>If you do not specify any event, no event data will be sent to Intercom.",
+          "format": "information",
+          "title": "Whitelisted Events"
         }
       ],
       "deployment_settings": [],
@@ -1700,6 +1689,11 @@
           "url": "/fetch-leads",
           "type": "cron",
           "value": "*/5 * * * *"
+        },
+        {
+          "url": "/status",
+          "type": "cron",
+          "value": "*/30 * * * *"
         }
       ]
     }
@@ -1710,7 +1704,7 @@
       "name": "SQL Importer",
       "description": "Import data from your SQL databases",
       "picture": "picture.png",
-      "version": "0.2.10",
+      "version": "0.2.11",
       "tags": [
         "incoming",
         "oneColumn"
@@ -1853,6 +1847,11 @@
           "url": "/sync",
           "type": "cron",
           "value": "0 */3 * * *"
+        },
+        {
+          "url": "/status",
+          "type": "cron",
+          "value": "30 */1 * * *"
         }
       ]
     }
@@ -1949,48 +1948,6 @@
           "url": "/fetch",
           "type": "cron",
           "value": "*/5 * * * *"
-        }
-      ]
-    }
-  },
-  {
-    "url": "https://hull-stripe.herokuapp.com/manifest.json",
-    "manifest": {
-      "name": "Stripe",
-      "description": "Collect Stripe Charges and Subscription events",
-      "tags": [
-        "incoming",
-        "oneColumn"
-      ],
-      "picture": "picture.png",
-      "admin": "auth",
-      "version": "0.1.0",
-      "settings": [],
-      "private_settings": [
-        {
-          "name": "id_parameter",
-          "title": "Hull user ID which the metadata param would be matched to",
-          "type": "string",
-          "enum": [
-            "external_id",
-            "id"
-          ],
-          "default": "external_id"
-        },
-        {
-          "name": "metadata_id_parameter",
-          "title": "Metadata parameter to match user id",
-          "type": "string"
-        }
-      ],
-      "deployment_settings": [],
-      "resources": [],
-      "readme": "readme.md",
-      "ui": false,
-      "schedules": [],
-      "subscriptions": [
-        {
-          "url": "/notify"
         }
       ]
     }
