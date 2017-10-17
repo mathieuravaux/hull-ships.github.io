@@ -3,7 +3,7 @@
     "url": "https://segment.hull.io/manifest.json",
     "manifest": {
       "name": "Segment",
-      "description": "Receive Events from Segment, send updated data to Segment",
+      "description": "Complete control over your customer data with Hull and Segment",
       "tags": [
         "incoming",
         "outgoing",
@@ -15,7 +15,7 @@
       "ui": false,
       "admin": "admin.html",
       "readme": "readme.md",
-      "version": "0.1.5",
+      "version": "0.1.10",
       "deployment_settings": [
         {
           "name": "_selector",
@@ -32,8 +32,8 @@
       ],
       "private_settings": [
         {
-          "name": "sending_title",
-          "title": "Sending data to segment",
+          "name": "sync_out_info",
+          "title": "Outgoing Data (Hull as Source)",
           "format": "title",
           "type": "string"
         },
@@ -46,8 +46,7 @@
         },
         {
           "name": "synchronized_segments",
-          "title": "Skips Users who don't belong to any of these segments",
-          "description": "Sends everyone if empty.",
+          "title": "Send users to Segment.com when belonging to one of these segments",
           "type": "array",
           "format": "segment",
           "items": {
@@ -56,9 +55,16 @@
           "default": []
         },
         {
+          "name": "synchronized_segments_hero",
+          "type": "string",
+          "headerTemplate": "The above list of segments is a whitelist. **By default all users are sent to Segment.com* with the attributes specified below.<br>As soon as you specify one or more segments, only users belonging to one these segments and associated events will be sent to Segment.com.",
+          "format": "information",
+          "title": "Whitelisted Segments"
+        },
+        {
           "name": "synchronized_properties",
-          "title": "Send Attributes to Segment.com",
-          "description": "Only sends list of user segments as 'hull_segments' attribute if empty.",
+          "title": "Send the following attributes as traits",
+          "description": "Sends the list of segments as trait `hull_segments` by default, plus any additional attributes specified here.",
           "type": "array",
           "format": "trait",
           "items": {
@@ -67,9 +73,19 @@
           "default": []
         },
         {
+          "name": "synchronized_account_properties",
+          "title": "Send Account Attributes to Segment.com",
+          "type": "array",
+          "format": "accountTrait",
+          "items": {
+            "type": "string"
+          },
+          "default": []
+        },
+        {
           "name": "send_events",
-          "title": "Send Events to Segment.com",
-          "description": "Sends everything if empty",
+          "title": "Send the following events for whitelisted users",
+          "description": "Sends all events, if not specified.",
           "type": "array",
           "format": "event",
           "default": [
@@ -79,8 +95,8 @@
         },
         {
           "name": "forward_events",
-          "title": "Allow forwarding events received from Segment.com",
-          "description": "Do NOT enable if Segment.com source and destination are the same. It could result in duplicates",
+          "title": "Enable forwarding of events received from Segment.com",
+          "description": "ONLY enable this feature when the Write Key is from a different workspace. Read the manual before making any changes; this can result in an endless loop of events.",
           "type": "boolean",
           "default": false
         }
@@ -88,35 +104,15 @@
       "settings": [
         {
           "name": "write_key",
-          "title": "Write Key",
-          "description": "Segment Write Key, found in Project Settings > Keys",
+          "title": "Write Key to send data to Segment.com API",
+          "description": "Find it under Settings > API Keys > Write Key in your Segment.com workspace.",
           "type": "string",
           "format": "text"
         },
         {
-          "name": "receiving_title",
-          "title": "Receiving data from Segment",
-          "format": "title",
-          "type": "string"
-        },
-        {
-          "name": "handle_pages",
-          "title": "Handle Pages",
-          "description": "Store analytics.page() events. Can generate a lot of volume",
-          "type": "boolean",
-          "default": false
-        },
-        {
-          "name": "handle_screens",
-          "title": "Handle Screens",
-          "description": "Store analytics.screen() events. Can generate a lot of volume",
-          "type": "boolean",
-          "default": false
-        },
-        {
           "name": "public_id_field",
-          "title": "Public ID Field",
-          "description": "User field to use as the userId field for data sent to segment",
+          "title": "User ID",
+          "description": "Attribute to use as `userId` in the segment payload. Warning: This can affect your MTUs.",
           "type": "string",
           "enum": [
             "id",
@@ -126,11 +122,50 @@
           "format": "hidden"
         },
         {
+          "name": "sync_in_info",
+          "title": "Incoming Data (Hull as Destination)",
+          "format": "title",
+          "type": "string"
+        },
+        {
+          "name": "handle_pages",
+          "title": "Store Page Calls",
+          "description": "Record whenever a user sees a page of your website. This can result in a lot of events which affect your pricing.",
+          "type": "boolean",
+          "default": false
+        },
+        {
+          "name": "handle_screens",
+          "title": "Store Screen Calls",
+          "description": "Screen calls let you record whenever a user sees a screen on a mobile app. This can result in a lot of events which affect your pricing.",
+          "type": "boolean",
+          "default": false
+        },
+        {
           "name": "ignore_segment_userId",
-          "title": "Ignore Segment User ID",
-          "description": "Ignore userId from segment.com for data received, use email or anonymousIds instead",
+          "title": "Ignore User ID",
+          "description": "Ignore `userId` received from segment.com, use the email or anonymousId as identifier instead.",
           "type": "boolean",
           "default": false,
+          "format": "hidden"
+        },
+        {
+          "name": "group_calls_hero",
+          "type": "string",
+          "headerTemplate": "Group calls associate an individual user with a group—be it a company, organization, account, project, team or whatever you come up with. A user can be in multiple groups in segment, however **Hull will handle only one group**. Consecutive group calls will overwrite the attributes in Hull. For further information, please read the Instructions.",
+          "format": "information",
+          "title": "-- Group calls from Segment.com --"
+        },
+        {
+          "name": "public_account_id_field",
+          "title": "Public Account ID Field",
+          "description": "Account field to use as the groupId for data sent to segment",
+          "type": "string",
+          "enum": [
+            "id",
+            "external_id"
+          ],
+          "default": "external_id",
           "format": "hidden"
         },
         {
@@ -652,7 +687,7 @@
       "name": "Clearbit",
       "description": "Reveal anonymous users from your website and enrich them with the data you need",
       "picture": "picture.png",
-      "version": "0.2.2",
+      "version": "0.2.4",
       "tags": [
         "incoming",
         "outgoing",
@@ -930,7 +965,7 @@
       "ui": false,
       "admin": "admin",
       "readme": "readme.md",
-      "version": "0.1.2",
+      "version": "0.1.3",
       "private_settings": [
         {
           "name": "facebook_access_token",
@@ -1026,7 +1061,7 @@
     "url": "https://hull-datanyze.herokuapp.com/manifest.json",
     "manifest": {
       "name": "Datanyze",
-      "description": "Fetch additional customer data from Datanyze",
+      "description": "Maximize account-based engagement with Datanyze data in all your tools",
       "tags": [
         "outgoing",
         "batch",
@@ -1036,37 +1071,13 @@
       "picture": "picture.png",
       "ui": false,
       "readme": "readme.md",
-      "version": "0.2.4",
+      "version": "0.2.5",
       "private_settings": [
         {
-          "name": "synchronized_segments",
-          "title": "Filtered Segments",
-          "description": "Only send if user matches one of these segments. Empty sends no one.",
-          "default": [],
-          "type": "array",
-          "format": "segment"
-        },
-        {
-          "name": "target_trait",
-          "title": "Domain Lookup Field",
-          "description": "Choose which field to use to lookup a domain name",
           "type": "string",
-          "format": "trait",
-          "default": "domain"
-        },
-        {
-          "name": "excluded_domains",
-          "title": "Domain Excludes",
-          "description": "Domains to exclude from fetching. Comma Separated",
-          "type": "string",
-          "format": "text"
-        },
-        {
-          "name": "token",
-          "title": "Datanyze Token",
-          "description": "Datanyze Token",
-          "type": "string",
-          "format": "text"
+          "format": "title",
+          "name": "authentication_hero",
+          "title": "Authentication"
         },
         {
           "name": "username",
@@ -1074,6 +1085,56 @@
           "description": "Datanyze Username or Email",
           "type": "string",
           "format": "text"
+        },
+        {
+          "name": "token",
+          "title": "Datanyze API Token",
+          "description": "You can find your personal API Token at https://www.datanyze.com/settings/?tab=api",
+          "type": "string",
+          "format": "text"
+        },
+        {
+          "type": "string",
+          "format": "title",
+          "name": "enrich_hero",
+          "title": "Enrichment",
+          "description": "Enhance user profiles with Datanyze technographic and firmographic data points."
+        },
+        {
+          "name": "synchronized_segments",
+          "title": "Enrich users belonging to one of these segments",
+          "default": [],
+          "type": "array",
+          "format": "segment"
+        },
+        {
+          "name": "synchronized_segments_hero",
+          "type": "string",
+          "headerTemplate": "The above list of segments is a whitelist. You need to *explicitely specify one or more segments* for which enrichment shall be performed.<br>If you do not specify any segment, no user will be sent to the Datanyze API.",
+          "format": "information",
+          "title": "Whitelisted Segments"
+        },
+        {
+          "name": "target_trait",
+          "title": "Attribute that defines the company domain",
+          "description": "The connector will use the value of this attribute as domain when fetching people from Datanyze.",
+          "type": "string",
+          "format": "trait",
+          "default": "domain"
+        },
+        {
+          "name": "excluded_domains",
+          "title": "Excluded the following domains from Enrichment",
+          "description": "Please specify domain values as comma-separated list.",
+          "type": "string",
+          "format": "text"
+        },
+        {
+          "name": "excluded_domains_hero",
+          "type": "string",
+          "headerTemplate": "The above list of domains is a blacklist. You need to *explicitely specify one or more domains* for which enrichment shall be skipped.<br>If you do not specify any domain, the connector will perform a call to the Datanyze API for every user matching one of the whitelisted segments. Please note that each call will count towards your monthly rate limit.",
+          "format": "information",
+          "title": "Blacklisted Domains"
         }
       ],
       "resources": [],
@@ -1319,7 +1380,7 @@
       "ui": false,
       "admin": "admin.html",
       "readme": "readme.md",
-      "version": "0.1.3",
+      "version": "0.1.10",
       "private_settings": [
         {
           "name": "sentry_dsn",
@@ -1351,7 +1412,7 @@
       "name": "Hubspot",
       "description": "Sync a Hubspot Channel whenever a User enters or leaves a Segment",
       "picture": "picture.png",
-      "version": "0.3.7",
+      "version": "0.3.8",
       "tags": [
         "outgoing",
         "incoming",
@@ -1488,6 +1549,11 @@
           "url": "/monitor/checkToken",
           "type": "cron",
           "value": "*/5 * * * *"
+        },
+        {
+          "url": "/status",
+          "type": "cron",
+          "value": "*/30 * * * *"
         }
       ]
     }
@@ -1506,7 +1572,7 @@
       "index": "ship.js",
       "admin": "/auth/",
       "picture": "picture.png",
-      "version": "0.7.21",
+      "version": "0.7.23",
       "settings": [],
       "private_settings": [
         {
@@ -2049,6 +2115,156 @@
       "subscriptions": [
         {
           "url": "/notify"
+        }
+      ]
+    }
+  },
+  {
+    "url": "https://hull-customerio.herokuapp.com/manifest.json",
+    "manifest": {
+      "name": "Hull-customerio",
+      "description": "Supercharge your email engagement in Customer.io",
+      "picture": "picture.png",
+      "version": "0.1.5",
+      "tags": [
+        "outgoing",
+        "batch",
+        "oneColumn",
+        "smart-notifier"
+      ],
+      "private_settings": [
+        {
+          "name": "credentials_title",
+          "title": "Credentials",
+          "format": "title",
+          "type": "string"
+        },
+        {
+          "name": "site_id",
+          "title": "Customer.io Site ID",
+          "type": "string"
+        },
+        {
+          "name": "api_key",
+          "title": "Customer.io API Key",
+          "type": "string"
+        },
+        {
+          "name": "configuration_title",
+          "title": "Configuration",
+          "format": "title",
+          "type": "string"
+        },
+        {
+          "name": "synchronized_segments",
+          "title": "Send users to Customer.io when belonging to one of these segments",
+          "type": "array",
+          "default": [],
+          "format": "segment"
+        },
+        {
+          "name": "synchronized_segments_hero",
+          "type": "string",
+          "headerTemplate": "The above list of segments is a whitelist. You need to *explicitely specify one or more segments* for which events and users shall be sent to Customer.io.<br>If you do not specify any segment, no user or event will be sent to Customer.io.",
+          "format": "information",
+          "title": "Whitelisted Segments"
+        },
+        {
+          "name": "enable_user_deletion",
+          "title": "Enable User Deletion",
+          "description": "If this field is enabled, users who don't match the Segments above will be DELETED from Customer.io. Otherwise they will be ignored",
+          "type": "boolean",
+          "default": false
+        },
+        {
+          "name": "events_filter",
+          "title": "Sends these events to Customer.io",
+          "type": "array",
+          "format": "event"
+        },
+        {
+          "name": "send_events_hero",
+          "type": "string",
+          "headerTemplate": "The above list of events is a whitelist. You need to *explicitely specify one or more events* that shall be sent to Customer.io.<br>If you do not specify any event, no event data will be sent to Customer.io.",
+          "format": "information",
+          "title": "Whitelisted Events"
+        },
+        {
+          "name": "anonymous_events",
+          "title": "Send Anonymous Events",
+          "type": "boolean",
+          "default": false
+        },
+        {
+          "name": "user_id_mapping",
+          "title": "Which user attribute to send as the customerId",
+          "type": "string",
+          "format": "trait",
+          "default": "external_id"
+        },
+        {
+          "name": "data_title",
+          "title": "Data Mapping",
+          "format": "title",
+          "type": "string"
+        },
+        {
+          "name": "synchronized_attributes",
+          "title": "Send Attributes to Customer.io",
+          "description": "Email, customerId and hull_segments are sent automatically",
+          "type": "array",
+          "format": "trait"
+        }
+      ],
+      "resources": [],
+      "readme": "readme.md",
+      "admin": "admin.html",
+      "ui": false,
+      "subscriptions": [
+        {
+          "url": "/smart-notifier"
+        }
+      ],
+      "schedules": [
+        {
+          "url": "/status",
+          "type": "cron",
+          "value": "*/30 * * * *"
+        }
+      ]
+    }
+  },
+  {
+    "url": "https://incoming.hull.io/manifest.json",
+    "manifest": {
+      "name": "Incoming Webhooks",
+      "description": "Recompute external properties and emit events with Javascript logic whenever user is send to connector by webhook",
+      "tags": [
+        "incoming",
+        "oneColumn"
+      ],
+      "picture": "picture.png",
+      "ui": false,
+      "admin": "admin.html",
+      "readme": "readme.md",
+      "version": "0.1.3",
+      "private_settings": [
+        {
+          "name": "code",
+          "title": "Code",
+          "description": "Enter Javascript code here, It will receive the data in the middle column, can emit `track()` and `traits()`. Preview results on the right. Save when finished",
+          "type": "string",
+          "default": "console.log(\"Hello !\");\nhull.user({ id: \"123\" }).traits({ coconuts: 12 });\nhull.user({ id: \"123\" }).track(\"sample event\");",
+          "format": "hidden"
+        }
+      ],
+      "resources": [],
+      "subscriptions": [],
+      "schedules": [
+        {
+          "url": "/status",
+          "type": "cron",
+          "value": "*/30 * * * *"
         }
       ]
     }
