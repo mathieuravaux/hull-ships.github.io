@@ -955,8 +955,8 @@
   {
     "url": "https://hull-facebook-audiences.herokuapp.com/manifest.json",
     "manifest": {
-      "name": "Facebook Audiences",
-      "description": "Send Hull Segments to Facebook Custom audiences",
+      "name": "Facebook Ad Audiences",
+      "description": "Target your Leads with Facebook Ads",
       "tags": [
         "outgoing",
         "oneColumn"
@@ -965,7 +965,7 @@
       "ui": false,
       "admin": "admin",
       "readme": "readme.md",
-      "version": "0.1.3",
+      "version": "0.1.4",
       "private_settings": [
         {
           "name": "facebook_access_token",
@@ -1765,15 +1765,17 @@
     }
   },
   {
-    "url": "https://hull-sql.herokuapp.com/manifest.json",
+    "url": "https://sql.connectors.hullapp.net/manifest.json",
     "manifest": {
       "name": "SQL Importer",
       "description": "Import data from your SQL databases",
       "picture": "picture.png",
-      "version": "0.2.11",
+      "version": "0.3.0",
       "tags": [
         "incoming",
-        "oneColumn"
+        "oneColumn",
+        "beta-release",
+        "sql-accounts"
       ],
       "private_settings": [
         {
@@ -1781,6 +1783,18 @@
           "format": "title",
           "name": "connector_info",
           "title": "Connector Configuration"
+        },
+        {
+          "name": "import_type",
+          "title": "Import type",
+          "description": "What do you want to import to Hull ?",
+          "type": "string",
+          "enum": [
+            "users",
+            "accounts"
+          ],
+          "default": "users",
+          "required": true
         },
         {
           "name": "enabled",
