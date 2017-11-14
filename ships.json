@@ -259,12 +259,13 @@
       "tags": [
         "outgoing",
         "oneColumn",
-        "batch"
+        "batch",
+        "smart-notifier"
       ],
       "description": "Enrich your Leads and Contacts in Salesforce and Trigger Powerful Workflows",
       "readme": "readme.md",
       "admin": "/auth",
-      "version": "0.2.9",
+      "version": "0.3.17",
       "picture": "picture.png",
       "ui": false,
       "settings": [
@@ -299,7 +300,7 @@
         {
           "name": "synchronized_segments",
           "title": "Send users belonging to one of these segments to Salesforce",
-          "description": "Sends all users if not set, otherwise only users in the specified segments are sent. Updates from Salesforce are always fetched for all users.",
+          "description": "Only users in the specified segments are sent. Updates from Salesforce are always fetched for all users.",
           "type": "array",
           "format": "segment",
           "items": {
@@ -314,7 +315,7 @@
           "type": "string"
         },
         {
-          "name": "leads_mapping",
+          "name": "lead_attributes_outbound",
           "title": "List of Lead fields to send from Hull to Salesforce",
           "type": "array",
           "format": "table",
@@ -366,7 +367,17 @@
           }
         },
         {
-          "name": "fetch_lead_fields",
+          "name": "lead_assignmentrule",
+          "title": "The lead assignment rule to use when creating or updating leads",
+          "type": "string",
+          "format": "select",
+          "default": "none",
+          "options": {
+            "loadOptions": "/assignmentrules/lead"
+          }
+        },
+        {
+          "name": "lead_attributes_inbound",
           "title": "List of Lead fields to fetch from Salesforce",
           "type": "array",
           "format": "select",
@@ -381,7 +392,7 @@
           "type": "string"
         },
         {
-          "name": "contacts_mapping",
+          "name": "contact_attributes_outbound",
           "title": "List of Contact fields to send from Hull to Salesforce",
           "type": "array",
           "format": "table",
@@ -433,12 +444,81 @@
           }
         },
         {
-          "name": "fetch_contact_fields",
+          "name": "contact_attributes_inbound",
           "title": "List of Contact fields to fetch from Salesforce",
           "type": "array",
           "format": "select",
           "options": {
             "loadOptions": "/schema/contact"
+          }
+        },
+        {
+          "name": "accounts",
+          "title": "Accounts sync",
+          "format": "title",
+          "type": "string"
+        },
+        {
+          "name": "account_attributes_outbound",
+          "title": "List of Account fields to push to Salesforce",
+          "type": "array",
+          "format": "table",
+          "default": [
+            {
+              "hull_field_name": "account.domain",
+              "salesforce_field_name": "Website",
+              "default_value": "[Unknown]",
+              "overwrite": false
+            },
+            {
+              "hull_field_name": "account.name",
+              "salesforce_field_name": "Name",
+              "default_value": "[Unknown]",
+              "overwrite": false
+            }
+          ],
+          "items": {
+            "type": "object",
+            "properties": {
+              "hull_field_name": {
+                "type": "string",
+                "format": "trait",
+                "title": "Hull Field"
+              },
+              "salesforce_field_name": {
+                "type": "string",
+                "title": "Salesforce Field",
+                "format": "select",
+                "options": {
+                  "loadOptions": "/schema/account_updateable"
+                }
+              },
+              "overwrite": {
+                "type": "boolean",
+                "title": "Hull overwrites Salesforce",
+                "default": false
+              }
+            },
+            "required": [
+              "hull_field_name",
+              "salesforce_field_name"
+            ]
+          }
+        },
+        {
+          "name": "fetch_accounts",
+          "title": "Fetch Accounts",
+          "description": "Enable fetching Salesforce Accounts to Hull",
+          "type": "boolean",
+          "default": false
+        },
+        {
+          "name": "account_attributes_inbound",
+          "title": "List of Account fields to fetch from Salesforce",
+          "type": "array",
+          "format": "select",
+          "options": {
+            "loadOptions": "/schema/account"
           }
         },
         {
@@ -457,7 +537,7 @@
       ],
       "schedules": [
         {
-          "url": "/sync",
+          "url": "/fetch",
           "type": "cron",
           "value": "*/5 * * * *"
         },
@@ -469,7 +549,7 @@
       ],
       "subscriptions": [
         {
-          "url": "/notify"
+          "url": "/smart-notifier"
         }
       ]
     }
@@ -687,7 +767,7 @@
       "name": "Clearbit",
       "description": "Reveal anonymous users from your website and enrich them with the data you need",
       "picture": "picture.png",
-      "version": "0.2.4",
+      "version": "0.2.5",
       "tags": [
         "incoming",
         "outgoing",
@@ -965,7 +1045,7 @@
       "ui": false,
       "admin": "admin",
       "readme": "readme.md",
-      "version": "0.1.4",
+      "version": "0.1.5",
       "private_settings": [
         {
           "name": "facebook_access_token",
@@ -1071,7 +1151,7 @@
       "picture": "picture.png",
       "ui": false,
       "readme": "readme.md",
-      "version": "0.2.5",
+      "version": "0.2.6",
       "private_settings": [
         {
           "type": "string",
@@ -1240,7 +1320,7 @@
       ],
       "picture": "picture.png",
       "admin": "/auth/",
-      "version": "0.3.2",
+      "version": "0.4.0",
       "private_settings": [
         {
           "name": "synchronized_segments",
@@ -1374,13 +1454,14 @@
         "incoming",
         "outgoing",
         "batch",
-        "oneColumn"
+        "oneColumn",
+        "smart-notifier"
       ],
       "picture": "picture.png",
       "ui": false,
       "admin": "admin.html",
       "readme": "readme.md",
-      "version": "0.1.10",
+      "version": "0.2.1",
       "private_settings": [
         {
           "name": "sentry_dsn",
@@ -1401,7 +1482,7 @@
       "resources": [],
       "subscriptions": [
         {
-          "url": "/notify"
+          "url": "/smart-notifier"
         }
       ]
     }
@@ -2043,7 +2124,7 @@
         "batch"
       ],
       "picture": "picture.png",
-      "version": "0.2.4",
+      "version": "0.2.7",
       "private_settings": [
         {
           "name": "webhooks_urls",
@@ -2070,6 +2151,13 @@
           "title": "Send conditions",
           "type": "string",
           "format": "title"
+        },
+        {
+          "name": "webhooks_anytime",
+          "title": "Send anytime user is updated",
+          "type": "boolean",
+          "format": "checkbox",
+          "default": false
         },
         {
           "name": "webhooks_segments",
@@ -2139,7 +2227,7 @@
       "name": "Hull-customerio",
       "description": "Supercharge your email engagement in Customer.io",
       "picture": "picture.png",
-      "version": "0.1.5",
+      "version": "0.1.6",
       "tags": [
         "outgoing",
         "batch",
@@ -2279,6 +2367,86 @@
           "url": "/status",
           "type": "cron",
           "value": "*/30 * * * *"
+        }
+      ]
+    }
+  },
+  {
+    "url": "https://shr.it/manifest.json",
+    "manifest": {
+      "name": "Shortener",
+      "description": "A Simple URL shortener that tracks clicks and allows you to retarget those audiences on social networks",
+      "picture": "picture.png",
+      "version": "0.1.0",
+      "tags": [
+        "smart-notifier",
+        "incoming",
+        "outgoing",
+        "batch",
+        "oneColumn"
+      ],
+      "settings": [
+        {
+          "name": "facebook_title",
+          "title": "Your Facebook Pixel",
+          "description": "Get your Facebook Pixel from the [Ads Manager](https://www.facebook.com/ads/manager/pixel/facebook_pixel) or [create one](https://www.facebook.com/business/help/952192354843755?helpref=faq_content#createpixel).",
+          "type": "string",
+          "format": "title"
+        },
+        {
+          "name": "facebook",
+          "title": "Facebook Pixel ID",
+          "type": "string",
+          "format": "string"
+        },
+        {
+          "name": "twitter_title",
+          "title": "Your Twitter Pixel",
+          "description": "See [how to create a Twitter pixel](https://business.twitter.com/fr/advertising/campaign-types/increase-website-traffic/how-to-setup-conversion-tracking.html)",
+          "type": "string",
+          "format": "title"
+        },
+        {
+          "name": "twitter",
+          "title": "Twitter Pixel ID",
+          "type": "string",
+          "format": "string"
+        },
+        {
+          "name": "google_title",
+          "title": "Your Google Pixel",
+          "description": "See [how to create a Google Pixel](https://adwords.google.com/cm/CampaignMgmt)",
+          "type": "string",
+          "format": "title"
+        },
+        {
+          "name": "google",
+          "title": "Google Pixel ID",
+          "type": "string",
+          "format": "string"
+        },
+        {
+          "name": "linkedin_title",
+          "title": "Your Linkedin Pixel",
+          "description": "See [how to create a Linkedin Pixel](https://www.linkedin.com/ad/accounts)",
+          "type": "string",
+          "format": "title"
+        },
+        {
+          "name": "linkedin",
+          "title": "Linkedin Pixel ID",
+          "type": "string",
+          "format": "string"
+        }
+      ],
+      "private_settings": [],
+      "resources": [],
+      "readme": "readme.md",
+      "admin": "admin.html",
+      "ui": false,
+      "subscriptions": [
+        {
+          "url": "/smart-notifier"
         }
       ]
     }
