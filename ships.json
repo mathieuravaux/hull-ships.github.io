@@ -265,7 +265,7 @@
       "description": "Enrich your Leads and Contacts in Salesforce and Trigger Powerful Workflows",
       "readme": "readme.md",
       "admin": "/auth",
-      "version": "0.3.17",
+      "version": "0.4.3",
       "picture": "picture.png",
       "ui": false,
       "settings": [
@@ -298,8 +298,19 @@
           "type": "string"
         },
         {
-          "name": "synchronized_segments",
-          "title": "Send users belonging to one of these segments to Salesforce",
+          "name": "lead_synchronized_segments",
+          "title": "Send users as leads when they belong to one of these segments to Salesforce",
+          "description": "Only users in the specified segments are sent. Updates from Salesforce are always fetched for all users.",
+          "type": "array",
+          "format": "segment",
+          "items": {
+            "type": "string"
+          },
+          "default": []
+        },
+        {
+          "name": "contact_synchronized_segments",
+          "title": "Send users as contacts when they belong to one of these segments to Salesforce",
           "description": "Only users in the specified segments are sent. Updates from Salesforce are always fetched for all users.",
           "type": "array",
           "format": "segment",
@@ -457,6 +468,23 @@
           "title": "Accounts sync",
           "format": "title",
           "type": "string"
+        },
+        {
+          "name": "account_ident_sfdc",
+          "title": "Unique identifier in Salesforce",
+          "format": "select",
+          "type": "string",
+          "options": {
+            "loadOptions": "/schema/account_updateable"
+          },
+          "default": "Website"
+        },
+        {
+          "name": "account_ident_hull",
+          "title": "Corresponding identifier field in Hull",
+          "format": "accountTrait",
+          "type": "string",
+          "default": "account.domain"
         },
         {
           "name": "account_attributes_outbound",
@@ -767,7 +795,7 @@
       "name": "Clearbit",
       "description": "Reveal anonymous users from your website and enrich them with the data you need",
       "picture": "picture.png",
-      "version": "0.2.5",
+      "version": "0.2.6",
       "tags": [
         "incoming",
         "outgoing",
@@ -834,8 +862,19 @@
         {
           "name": "reveal_enabled",
           "title": "Enable Reveal",
+          "description": "Deprecated. Please set some revealable segments and stop relying on this checkbox - Keep it enabled for now",
           "type": "boolean",
           "default": false
+        },
+        {
+          "name": "reveal_segments",
+          "title": "Which user segments to send to reveal. I.E. 'at least 2 page views' - Reveals everyone if empty",
+          "type": "array",
+          "format": "segment",
+          "items": {
+            "type": "string"
+          },
+          "default": []
         },
         {
           "name": "reveal_prospect_min_contacts",
@@ -1851,7 +1890,7 @@
       "name": "SQL Importer",
       "description": "Import data from your SQL databases",
       "picture": "picture.png",
-      "version": "0.3.0",
+      "version": "0.3.2",
       "tags": [
         "incoming",
         "oneColumn",
@@ -1872,7 +1911,8 @@
           "type": "string",
           "enum": [
             "users",
-            "accounts"
+            "accounts",
+            "events"
           ],
           "default": "users",
           "required": true
@@ -1882,6 +1922,22 @@
           "title": "Enable Sync (default interval is 3 hours)",
           "type": "boolean",
           "default": "false"
+        },
+        {
+          "name": "sync_interval",
+          "title": "Sync interval (in minutes)",
+          "type": "string",
+          "default": "180",
+          "enum": [
+            "1",
+            "5",
+            "30",
+            "60",
+            "180",
+            "360",
+            "720",
+            "1440"
+          ]
         },
         {
           "name": "overwrite",
@@ -2006,13 +2062,14 @@
       "schedules": [
         {
           "url": "/sync",
-          "type": "cron",
-          "value": "0 */3 * * *"
+          "type": "interval",
+          "value_from": "private_settings.sync_interval",
+          "default": "180"
         },
         {
           "url": "/status",
           "type": "cron",
-          "value": "30 */1 * * *"
+          "value": "30 * * * *"
         }
       ]
     }
@@ -2224,7 +2281,7 @@
   {
     "url": "https://hull-customerio.herokuapp.com/manifest.json",
     "manifest": {
-      "name": "Hull-customerio",
+      "name": "Customer.io",
       "description": "Supercharge your email engagement in Customer.io",
       "picture": "picture.png",
       "version": "0.1.6",
@@ -2447,6 +2504,168 @@
       "subscriptions": [
         {
           "url": "/smart-notifier"
+        }
+      ]
+    }
+  },
+  {
+    "url": "https://hull-google-sheets.herokuapp.com/manifest.json",
+    "manifest": {
+      "name": "Google Sheets importer",
+      "description": "Import data from your Google Sheets",
+      "tags": [
+        "incoming",
+        "oneColumn"
+      ],
+      "picture": "picture.png",
+      "ui": false,
+      "readme": "readme.md",
+      "version": "0.2.0",
+      "admin": "admin.html"
+    }
+  },
+  {
+    "url": "https://scheduled-calls.connectors.hullapp.net/manifest.json",
+    "manifest": {
+      "name": "Scheduled Calls",
+      "description": "Call an API at regular intervals and pass response to Hull",
+      "tags": [
+        "incoming",
+        "outgoing",
+        "batch",
+        "oneColumn"
+      ],
+      "ui": false,
+      "picture": "picture.png",
+      "admin": "admin.html",
+      "readme": "readme.md",
+      "version": "0.0.1",
+      "private_settings": [
+        {
+          "type": "string",
+          "format": "string",
+          "name": "url",
+          "required": true,
+          "default": "https://example.com?query=true",
+          "title": "API Endpoint"
+        },
+        {
+          "name": "sync_interval",
+          "type": "number",
+          "title": "Call API every:",
+          "description": "Interval in minutes at which to call external API",
+          "default": 30,
+          "enum": [
+            1,
+            5,
+            10,
+            15,
+            30,
+            60,
+            120
+          ],
+          "required": true
+        },
+        {
+          "name": "method",
+          "type": "string",
+          "title": "Method",
+          "description": "The Method to use",
+          "default": "POST",
+          "enum": [
+            "GET",
+            "POST",
+            "PUT",
+            "PATCH",
+            "DELETE"
+          ],
+          "required": true
+        },
+        {
+          "name": "format",
+          "type": "string",
+          "title": "Response Format",
+          "description": "Selecting something other than Raw, we will parse the payload for you",
+          "default": "JSON",
+          "enum": [
+            "JSON",
+            "CSV",
+            "Raw"
+          ],
+          "required": true
+        },
+        {
+          "name": "headers",
+          "title": "Headers",
+          "description": "Headers to provide",
+          "type": "array",
+          "format": "table",
+          "default": [
+            {
+              "name": "Authorization",
+              "value": "Token token=secret"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/vnd.api+json"
+            }
+          ],
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string",
+                "format": "string",
+                "title": "Name"
+              },
+              "value": {
+                "type": "string",
+                "format": "string",
+                "title": "Value"
+              }
+            }
+          }
+        },
+        {
+          "name": "cookies",
+          "title": "Cookies",
+          "description": "Cookies to send",
+          "type": "array",
+          "format": "table",
+          "default": [
+            ""
+          ],
+          "items": {
+            "type": "string",
+            "format": "string",
+            "title": "Value",
+            "default": ""
+          }
+        },
+        {
+          "name": "body",
+          "title": "Request Body (POST, PUT, PATCH only)",
+          "type": "string",
+          "format": "code",
+          "default": "{}"
+        },
+        {
+          "name": "code",
+          "title": "Code",
+          "description": "Enter Javascript code here, It will receive the data in the middle column, can emit `track()` and `traits()`. Preview results on the right. Save when finished",
+          "type": "string",
+          "default": "console.log(\"Hello !\");",
+          "format": "hidden"
+        }
+      ],
+      "settings": [],
+      "resources": [],
+      "schedules": [
+        {
+          "url": "/sync",
+          "type": "interval",
+          "value_from": "private_settings.sync_interval",
+          "default": "30"
         }
       ]
     }
