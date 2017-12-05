@@ -265,7 +265,7 @@
       "description": "Enrich your Leads and Contacts in Salesforce and Trigger Powerful Workflows",
       "readme": "readme.md",
       "admin": "/auth",
-      "version": "0.4.3",
+      "version": "0.4.11",
       "picture": "picture.png",
       "ui": false,
       "settings": [
@@ -318,6 +318,20 @@
             "type": "string"
           },
           "default": []
+        },
+        {
+          "name": "ignore_users_withoutemail",
+          "type": "boolean",
+          "title": "Ignore users without email",
+          "default": false,
+          "format": "hidden"
+        },
+        {
+          "name": "ignore_users_withoutchanges",
+          "type": "boolean",
+          "title": "Ignore users without changes",
+          "default": false,
+          "format": "hidden"
         },
         {
           "name": "leads",
@@ -379,7 +393,17 @@
         },
         {
           "name": "lead_assignmentrule",
-          "title": "The lead assignment rule to use when creating or updating leads",
+          "title": "The lead assignment rule to use when **creating** leads",
+          "type": "string",
+          "format": "select",
+          "default": "none",
+          "options": {
+            "loadOptions": "/assignmentrules/lead"
+          }
+        },
+        {
+          "name": "lead_assignmentrule_update",
+          "title": "The lead assignment rule to use when **updating** leads",
           "type": "string",
           "format": "select",
           "default": "none",
@@ -1359,7 +1383,7 @@
       ],
       "picture": "picture.png",
       "admin": "/auth/",
-      "version": "0.4.0",
+      "version": "0.4.4",
       "private_settings": [
         {
           "name": "synchronized_segments",
@@ -1480,6 +1504,11 @@
           "url": "/track",
           "type": "cron",
           "value": "7 */6 * * *"
+        },
+        {
+          "url": "/status",
+          "type": "cron",
+          "value": "*/30 * * * *"
         }
       ]
     }
@@ -1500,7 +1529,7 @@
       "ui": false,
       "admin": "admin.html",
       "readme": "readme.md",
-      "version": "0.2.1",
+      "version": "0.2.5",
       "private_settings": [
         {
           "name": "sentry_dsn",
@@ -1532,12 +1561,13 @@
       "name": "Hubspot",
       "description": "Sync a Hubspot Channel whenever a User enters or leaves a Segment",
       "picture": "picture.png",
-      "version": "0.3.8",
+      "version": "0.3.11",
       "tags": [
         "outgoing",
         "incoming",
         "batch",
-        "oneColumn"
+        "oneColumn",
+        "smart-notifier"
       ],
       "settings": [],
       "private_settings": [
@@ -1656,7 +1686,7 @@
       "ui": false,
       "subscriptions": [
         {
-          "url": "/notify"
+          "url": "/smart-notifier"
         }
       ],
       "schedules": [
@@ -1721,6 +1751,12 @@
         },
         {
           "name": "is_fetch_completed",
+          "type": "boolean",
+          "default": false,
+          "format": "hidden"
+        },
+        {
+          "name": "skip_users_already_synced",
           "type": "boolean",
           "default": false,
           "format": "hidden"
@@ -2500,6 +2536,168 @@
       "resources": [],
       "readme": "readme.md",
       "admin": "admin.html",
+      "ui": false,
+      "subscriptions": [
+        {
+          "url": "/smart-notifier"
+        }
+      ]
+    }
+  },
+  {
+    "url": "https://hull-closeio.herokuapp.com/manifest.json",
+    "manifest": {
+      "name": "Hull-Closeio",
+      "description": "Automate customer interactions with your close.io CRM",
+      "picture": "picture.png",
+      "version": "0.1.4",
+      "tags": [
+        "outgoing",
+        "batch",
+        "oneColumn",
+        "smart-notifier"
+      ],
+      "settings": [],
+      "private_settings": [
+        {
+          "name": "credentials_title",
+          "title": "Credentials",
+          "format": "title",
+          "type": "string"
+        },
+        {
+          "name": "api_key",
+          "title": "Close.io API Key",
+          "type": "string",
+          "description": "Find it via your close.io dashboard: Settings > Your API Keys"
+        },
+        {
+          "name": "configuration_title",
+          "title": "Configuration",
+          "format": "title",
+          "type": "string"
+        },
+        {
+          "name": "synchronized_segments",
+          "title": "Send users to Close.io when belonging to one of these segments",
+          "type": "array",
+          "default": [],
+          "format": "segment"
+        },
+        {
+          "name": "synchronized_segments_hero",
+          "type": "string",
+          "headerTemplate": "The above list of segments is a whitelist. You need to *explicitely specify one or more segments* for which users and events shall be sent to Close.io.<br>If you do not specify any segment, no user or event will be sent to Close.io.",
+          "format": "information",
+          "title": "Whitelisted Segments"
+        },
+        {
+          "name": "lead_status",
+          "title": "The lead status to use for creating new leads. If set to None the default status will be applied by close.io",
+          "type": "string",
+          "format": "select",
+          "default": "hull-default",
+          "options": {
+            "loadOptions": "/leadstatuses"
+          }
+        },
+        {
+          "name": "leadsync_title",
+          "title": "Leads Data Mapping",
+          "format": "title",
+          "type": "string"
+        },
+        {
+          "name": "lead_attributes_outbound",
+          "title": "Send Account Attributes to Close.io",
+          "description": "Name and domain are sent automatically",
+          "type": "array",
+          "format": "table",
+          "default": [
+            {
+              "hull_field_name": "account.name",
+              "closeio_field_name": "name"
+            }
+          ],
+          "items": {
+            "type": "object",
+            "properties": {
+              "hull_field_name": {
+                "type": "string",
+                "format": "accountTrait",
+                "title": "Hull Attribute"
+              },
+              "closeio_field_name": {
+                "type": "string",
+                "title": "Close.io Field",
+                "format": "select",
+                "options": {
+                  "loadOptions": "/fields-lead"
+                }
+              }
+            },
+            "required": [
+              "hull_field_name",
+              "closeio_field_name"
+            ]
+          }
+        },
+        {
+          "name": "lead_attributes_inbound",
+          "title": "List of Lead fields to fetch from Close.io",
+          "type": "array",
+          "format": "select",
+          "options": {
+            "loadOptions": "/fields-lead"
+          }
+        },
+        {
+          "name": "contactsync_title",
+          "title": "Contacts Data Mapping",
+          "format": "title",
+          "type": "string"
+        },
+        {
+          "name": "contact_attributes_outbound",
+          "title": "Send User Attributes to Close.io",
+          "description": "Name is sent automatically",
+          "type": "array",
+          "format": "table",
+          "items": {
+            "type": "object",
+            "properties": {
+              "hull_field_name": {
+                "type": "string",
+                "format": "trait",
+                "title": "Hull Attribute"
+              },
+              "closeio_field_name": {
+                "type": "string",
+                "title": "Close.io Field",
+                "format": "select",
+                "options": {
+                  "loadOptions": "/fields-contact-out"
+                }
+              }
+            },
+            "required": [
+              "hull_field_name",
+              "closeio_field_name"
+            ]
+          }
+        },
+        {
+          "name": "contact_attributes_inbound",
+          "title": "List of Contact fields to fetch from Close.io",
+          "type": "array",
+          "format": "select",
+          "options": {
+            "loadOptions": "/fields-contact-in"
+          }
+        }
+      ],
+      "readme": "readme.md",
+      "admin": "admin",
       "ui": false,
       "subscriptions": [
         {
