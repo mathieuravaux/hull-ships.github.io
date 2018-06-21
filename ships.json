@@ -8,14 +8,25 @@
         "incoming",
         "outgoing",
         "batch",
-        "oneColumn"
+        "oneColumn",
+        "smart-notifier"
       ],
       "index": "ship.js",
+      "source": "segment",
+      "logo": "logo.png",
       "picture": "picture.png",
       "ui": false,
       "admin": "admin.html",
+      "tabs": [
+        {
+          "title": "Credentials",
+          "url": "admin.html",
+          "size": "small",
+          "editable": false
+        }
+      ],
       "readme": "readme.md",
-      "version": "0.1.15",
+      "version": "0.1.19",
       "deployment_settings": [
         {
           "name": "_selector",
@@ -174,70 +185,16 @@
         }
       ],
       "resources": [],
-      "subscriptions": [
+      "schedules": [
         {
-          "url": "/notify"
-        }
-      ]
-    }
-  },
-  {
-    "url": "https://hull-optimizely.herokuapp.com/manifest.json",
-    "manifest": {
-      "name": "Optimizely",
-      "description": "Send Hull Segments as Optimizely audiences, use it to personalize for each customer",
-      "tags": [
-        "client",
-        "outgoing"
-      ],
-      "picture": "picture.png",
-      "index": "ship.js",
-      "readme": "readme.md",
-      "ui": false,
-      "version": "0.0.1",
-      "settings": [
-        {
-          "name": "audiences",
-          "format": "hidden",
-          "type": "array",
-          "items": {
-            "type": "object",
-            "properties": {
-              "name": {
-                "type": "string"
-              },
-              "audience_id": {
-                "type": "integer"
-              },
-              "segment_id": {
-                "type": "string"
-              }
-            },
-            "required": [
-              "name",
-              "segment_id",
-              "audience_id"
-            ]
-          }
-        }
-      ],
-      "private_settings": [
-        {
-          "name": "optimizely_api_key",
-          "title": "Optimizely API Key",
-          "type": "string",
-          "required": true
-        },
-        {
-          "name": "optimizely_project_id",
-          "title": "Optimizely Project ID",
-          "type": "integer",
-          "required": true
+          "url": "/status",
+          "type": "interval",
+          "value": "5"
         }
       ],
       "subscriptions": [
         {
-          "url": "/notify"
+          "url": "/smart-notify"
         }
       ]
     }
@@ -255,7 +212,17 @@
       "description": "Enrich your Leads and Contacts in Salesforce and Trigger Powerful Workflows",
       "readme": "readme.md",
       "admin": "/auth",
-      "version": "0.4.13",
+      "tabs": [
+        {
+          "title": "Credentials",
+          "url": "/auth",
+          "size": "small",
+          "editable": false
+        }
+      ],
+      "version": "0.5.13",
+      "source": "salesforce",
+      "logo": "logo.png",
       "picture": "picture.png",
       "ui": false,
       "settings": [
@@ -320,6 +287,13 @@
           "name": "ignore_users_withoutchanges",
           "type": "boolean",
           "title": "Ignore users without changes",
+          "default": false,
+          "format": "hidden"
+        },
+        {
+          "name": "link_accounts",
+          "type": "boolean",
+          "title": "If true the connector will link saved contacts to accounts",
           "default": false,
           "format": "hidden"
         },
@@ -507,13 +481,13 @@
           "format": "table",
           "default": [
             {
-              "hull_field_name": "account.domain",
+              "hull_field_name": "domain",
               "salesforce_field_name": "Website",
               "default_value": "[Unknown]",
               "overwrite": false
             },
             {
-              "hull_field_name": "account.name",
+              "hull_field_name": "name",
               "salesforce_field_name": "Name",
               "default_value": "[Unknown]",
               "overwrite": false
@@ -524,7 +498,7 @@
             "properties": {
               "hull_field_name": {
                 "type": "string",
-                "format": "trait",
+                "format": "accountTrait",
                 "title": "Hull Field"
               },
               "salesforce_field_name": {
@@ -591,7 +565,18 @@
       ],
       "subscriptions": [
         {
-          "url": "/smart-notifier"
+          "url": "/smart-notifier",
+          "conditions": {
+            "channels": {
+              "only": [
+                "user:update",
+                "ship:update",
+                "users_segment:update",
+                "accounts_segment:update",
+                "segment:update"
+              ]
+            }
+          }
         }
       ]
     }
@@ -602,11 +587,12 @@
       "name": "Slack",
       "description": "Notify a Slack Channel whenever a User enters or leaves a Segment",
       "picture": "picture.png",
-      "version": "0.0.3",
+      "version": "0.0.5",
       "tags": [
         "incoming",
         "outgoing",
-        "oneColumn"
+        "oneColumn",
+        "smart-notifier"
       ],
       "settings": [],
       "private_settings": [
@@ -794,11 +780,26 @@
       "deployment_settings": [],
       "resources": [],
       "readme": "readme.md",
-      "admin": "/auth/",
+      "admin": "/auth",
+      "tabs": [
+        {
+          "title": "Set Up",
+          "url": "/auth",
+          "size": "small",
+          "editable": false
+        }
+      ],
       "ui": false,
       "subscriptions": [
         {
-          "url": "/notify"
+          "url": "/smart-notify"
+        }
+      ],
+      "schedules": [
+        {
+          "url": "/status",
+          "type": "interval",
+          "value": "5"
         }
       ]
     }
@@ -807,45 +808,66 @@
     "url": "https://hull-clearbit.herokuapp.com/manifest.json",
     "manifest": {
       "name": "Clearbit",
-      "description": "Reveal anonymous users from your website and enrich them with the data you need",
-      "picture": "picture.png",
-      "version": "0.2.8",
+      "description": "Synchronize Data with Clearbit",
       "tags": [
         "incoming",
         "outgoing",
         "batch",
-        "oneColumn"
+        "oneColumn",
+        "smart-notifier"
       ],
+      "ui": false,
+      "picture": "picture.png",
+      "admin": "admin.html",
+      "tabs": [
+        {
+          "title": "Prospector",
+          "url": "admin.html",
+          "size": "large",
+          "editable": false
+        }
+      ],
+      "source": "clearbit",
+      "readme": "readme.md",
+      "version": "0.4.11",
       "private_settings": [
         {
           "type": "string",
           "format": "title",
-          "name": "authentication",
-          "title": "Authentication"
+          "name": "setup",
+          "title": "setup"
         },
         {
-          "name": "api_key",
           "title": "Clearbit API Key",
+          "name": "api_key",
           "description": "Use the secret API key from https://dashboard.clearbit.com/api",
           "type": "string",
           "format": "text"
         },
         {
-          "type": "string",
-          "format": "title",
-          "name": "enrich_info",
-          "title": "Enrichment",
-          "description": "Transform the email address or domain in a person or company profile with more than 85 data points."
+          "name": "handle_accounts",
+          "title": "Use Accounts Feature",
+          "type": "boolean",
+          "default": false,
+          "format": "hidden"
         },
         {
+          "type": "string",
+          "format": "title",
+          "name": "enrich",
+          "title": "Enrich"
+        },
+        {
+          "title": "Enable Enrich API",
           "name": "enrich_enabled",
-          "title": "Enable Enrichment",
+          "description": "Transform the email address or domain in a person or company profile with more than 85 data points.",
           "type": "boolean",
           "default": true
         },
         {
-          "name": "enrich_segments",
           "title": "Enrich users belonging to one of these segments",
+          "name": "enrich_segments",
+          "description": "Specify one or more segments for which enrichment will be performed. *No one is sent if this is empty*",
           "type": "array",
           "format": "segment",
           "items": {
@@ -854,35 +876,22 @@
           "default": []
         },
         {
-          "name": "enrich_segments_hero",
-          "type": "string",
-          "headerTemplate": "The above list of segments is a whitelist. You need to *explicitely specify one or more segments* for which enrichment shall be performed.<br>If you do not specify any segment, no user will be sent to Clearbit's API. An empty list has the same effect as disabling the feature via the checkbox.",
-          "format": "information",
-          "title": "Whitelisted Segments"
-        },
-        {
+          "title": "Reveal",
           "type": "string",
           "format": "title",
-          "name": "reveal",
-          "title": "Reveal"
+          "name": "reveal"
         },
         {
-          "type": "string",
-          "format": "information",
-          "name": "reveal_information",
-          "title": "- Precondition -",
-          "headerTemplate": "Reveal will only work with anonymous users. You need to enable **Anonymous Users** from your [Dashboard Settings](../../settings/user_settings) to store anonymous website traffic in Hull."
-        },
-        {
+          "title": "Enable Reveal API",
           "name": "reveal_enabled",
-          "title": "Enable Reveal",
-          "description": "Deprecated. Please set some revealable segments and stop relying on this checkbox - Keep it enabled for now",
+          "description": "Please set some revealable segments and stop relying on this checkbox - Keep it enabled for now",
           "type": "boolean",
           "default": false
         },
         {
+          "title": "Reveal users belonging to one of these segments",
+          "description": "Specify one or more segments to filter who will be sent to Reveal. *Every anonymous user is sent if this is empty*. We never send anyone who has identifiable information",
           "name": "reveal_segments",
-          "title": "Which user segments to send to reveal. I.E. 'at least 2 page views' - Reveals everyone if empty",
           "type": "array",
           "format": "segment",
           "items": {
@@ -891,9 +900,10 @@
           "default": []
         },
         {
+          "title": "Minimum distinct visitors from same company to trigger Prospect API",
           "name": "reveal_prospect_min_contacts",
-          "title": "Trigger Prospection - Minimum distinct visitors",
           "type": "number",
+          "description": "As soon as this number of distinct visitors from the same Company is met, the connector will run the Prospect workflow (if it's enabled)",
           "format": "range",
           "default": 1,
           "minimum": 1,
@@ -901,28 +911,30 @@
           "multipleOf": 1
         },
         {
-          "type": "string",
-          "format": "information",
-          "name": "reveal_trigger_prospector_info",
-          "title": "How does the trigger work?",
-          "headerTemplate": "The trigger let's you define when our connector automatically runs the Prospector workflow by defining the number of distinct users from the same IP address. As soon as this threshold is met, the connector will run the Prospect workflow if enabled."
-        },
-        {
+          "title": "Discovery",
           "type": "string",
           "format": "title",
           "name": "discovery_info",
-          "title": "Discovery",
           "description": "The Discovery API lets you search for companies that are similar to your existing customers."
         },
         {
+          "title": "Enable Discover API",
           "name": "discover_enabled",
-          "title": "Enable Discovery",
           "type": "boolean",
           "default": false
         },
         {
+          "title": "Attribute that defines the company domain",
+          "name": "discover_domain",
+          "type": "string",
+          "format": "trait",
+          "default": "domain",
+          "description": "Use this attribute as domain when fetching people from Clearbit."
+        },
+        {
           "name": "discover_segments",
-          "title": "Search for companies similar to the ones in these segments",
+          "title": "Discover companies similar to the ones in these segments",
+          "description": "Specify one or more segments to Define which companies are going to trigger new Discovery calls to find similar companies.",
           "type": "array",
           "format": "segment",
           "items": {
@@ -931,15 +943,8 @@
           "default": []
         },
         {
-          "type": "string",
-          "format": "information",
-          "name": "discover_segments_info",
-          "title": "Segmentation Tip",
-          "headerTemplate": "The connector uses the segments as whitelist to tigger the Clearbit flow for finding companies with a similar profile. We recommend to use only segments that describe your targeted company profiles."
-        },
-        {
           "name": "discover_limit_count",
-          "title": "Maximum number of companies to fetch",
+          "title": "Maximum number of companies to fetch for each new company triggerering Discovery",
           "type": "number",
           "format": "range",
           "default": 5,
@@ -960,13 +965,6 @@
           "default": false
         },
         {
-          "name": "handle_accounts",
-          "title": "Use Accounts Feature (Beta)",
-          "type": "boolean",
-          "default": false,
-          "format": "hidden"
-        },
-        {
           "name": "prospect_domain",
           "title": "Attribute that defines the company domain",
           "type": "string",
@@ -976,20 +974,14 @@
         },
         {
           "name": "prospect_segments",
-          "title": "Fetch prospects for companies in these segments",
+          "title": "Prospect companies for these Segments",
+          "description": "Select one or more segments. When Users belonging to an Account enter the segments listed above, The Clearbit Prospector API will be called to find leads for this Account that match your targeted profiles.",
           "type": "array",
           "format": "segment",
           "items": {
             "type": "string"
           },
           "default": []
-        },
-        {
-          "type": "string",
-          "format": "information",
-          "name": "prospect_segments_info",
-          "title": "Segmentation Tip",
-          "headerTemplate": "The connector uses the segments as whitelist to tigger the Clearbit flow for finding leads within accounts that match your targeted profiles. We recommend to use only segments that describe your targeted company profiles."
         },
         {
           "name": "prospect_limit_count",
@@ -1005,7 +997,7 @@
           "type": "string",
           "format": "information",
           "name": "prospect_filter_info",
-          "title": "> DESCRIBE YOUR IDEAL LEAD <",
+          "title": "Describe Lead Search Criteria",
           "headerTemplate": "Search by role, seniority or title to identify your ideal prospects."
         },
         {
@@ -1074,13 +1066,18 @@
           "description": "Restrict your search by specifying criteria for the prospect's title. If left blank, search is carried out without restriction."
         }
       ],
+      "settings": [],
       "resources": [],
-      "readme": "readme.md",
-      "admin": "admin.html",
-      "ui": false,
       "subscriptions": [
         {
-          "url": "/notify"
+          "url": "/smart-notifier"
+        }
+      ],
+      "schedules": [
+        {
+          "url": "/status",
+          "type": "interval",
+          "value": "5"
         }
       ]
     }
@@ -1092,13 +1089,16 @@
       "description": "Target your Leads with Facebook Ads",
       "tags": [
         "outgoing",
-        "oneColumn"
+        "oneColumn",
+        "smart-notifier"
       ],
+      "source": "facebook-audiences",
+      "logo": "logo.png",
       "picture": "picture.png",
       "ui": false,
       "admin": "admin",
       "readme": "readme.md",
-      "version": "0.1.5",
+      "version": "0.2.3",
       "private_settings": [
         {
           "name": "facebook_access_token",
@@ -1185,7 +1185,14 @@
       "resources": [],
       "subscriptions": [
         {
-          "url": "/notify"
+          "url": "/smart-notifier"
+        }
+      ],
+      "schedules": [
+        {
+          "url": "/status",
+          "type": "interval",
+          "value": "30"
         }
       ]
     }
@@ -1198,13 +1205,16 @@
       "tags": [
         "outgoing",
         "batch",
-        "oneColumn"
+        "oneColumn",
+        "smart-notifier"
       ],
       "admin": "/admin/",
+      "source": "datanyze",
+      "logo": "logo.png",
       "picture": "picture.png",
       "ui": false,
       "readme": "readme.md",
-      "version": "0.2.6",
+      "version": "0.3.0",
       "private_settings": [
         {
           "type": "string",
@@ -1237,15 +1247,9 @@
           "name": "synchronized_segments",
           "title": "Enrich users belonging to one of these segments",
           "default": [],
+          "description": "The above list of segments is a whitelist. You need to *explicitely specify one or more segments* for which enrichment shall be performed.<br/> If you do not specify any segment, no user will be sent to the Datanyze API.",
           "type": "array",
           "format": "segment"
-        },
-        {
-          "name": "synchronized_segments_hero",
-          "type": "string",
-          "headerTemplate": "The above list of segments is a whitelist. You need to *explicitely specify one or more segments* for which enrichment shall be performed.<br>If you do not specify any segment, no user will be sent to the Datanyze API.",
-          "format": "information",
-          "title": "Whitelisted Segments"
         },
         {
           "name": "target_trait",
@@ -1258,22 +1262,30 @@
         {
           "name": "excluded_domains",
           "title": "Excluded the following domains from Enrichment",
-          "description": "Please specify domain values as comma-separated list.",
+          "description": "Please specify domain values as comma-separated list. The above list of domains is a blacklist. You need to *explicitely specify one or more domains* for which enrichment shall be skipped. If you do not specify any domain, the connector will perform a call to the Datanyze API for every user matching one of the whitelisted segments. Please note that each call will count towards your monthly rate limit.",
           "type": "string",
           "format": "text"
         },
         {
-          "name": "excluded_domains_hero",
-          "type": "string",
-          "headerTemplate": "The above list of domains is a blacklist. You need to *explicitely specify one or more domains* for which enrichment shall be skipped.<br>If you do not specify any domain, the connector will perform a call to the Datanyze API for every user matching one of the whitelisted segments. Please note that each call will count towards your monthly rate limit.",
-          "format": "information",
-          "title": "Blacklisted Domains"
+          "name": "handle_accounts",
+          "title": "Handle Accounts",
+          "description": "If active, Data will be written at Account level. The Account Domain field will be used to query Datanyze",
+          "type": "boolean",
+          "default": false,
+          "format": "checkbox"
         }
       ],
       "resources": [],
+      "schedules": [
+        {
+          "url": "/status",
+          "type": "interval",
+          "value": "5"
+        }
+      ],
       "subscriptions": [
         {
-          "url": "/notify"
+          "url": "/smart-notifier"
         }
       ]
     }
@@ -1285,25 +1297,50 @@
       "tags": [
         "outgoing",
         "batch",
-        "oneColumn"
+        "oneColumn",
+        "smart-notifier"
       ],
       "description": "Send Users as Leads or Contacts to Nutshell with custom mappings",
-      "version": "0.2.0",
+      "version": "0.3.0",
+      "source": "nutshell",
+      "logo": "logo.png",
       "picture": "picture.png",
       "ui": false,
       "readme": "readme.md",
       "settings": [],
       "private_settings": [
         {
+          "name": "authentication_title",
+          "title": "Authentication",
+          "format": "title",
+          "type": "string"
+        },
+        {
+          "name": "api_username",
+          "title": "Nutshell Username",
+          "type": "string"
+        },
+        {
+          "name": "api_key",
+          "title": "Nutshell API Key",
+          "type": "string"
+        },
+        {
           "name": "form_api_url",
           "title": "Nutshell Form API url",
           "type": "string",
-          "required": true
+          "format": "hidden"
+        },
+        {
+          "name": "configuration_title",
+          "title": "Configuration",
+          "format": "title",
+          "type": "string"
         },
         {
           "name": "synchronized_segments",
-          "title": "Filter users",
-          "description": "Only send users who match these segments to Segment.com. Keep empty to send everyone.",
+          "title": "Filter users and accounts to be treated as contacts and accounts",
+          "description": "Only send users who match these segments to Nutshell.",
           "type": "array",
           "format": "segment",
           "items": {
@@ -1312,50 +1349,187 @@
           "default": []
         },
         {
-          "name": "mapping",
-          "title": "Fields Mapping",
+          "name": "accountsync_title",
+          "title": "Accounts Data Mapping",
+          "format": "title",
+          "type": "string"
+        },
+        {
+          "name": "account_sync_enabled",
+          "title": "Account synchronization",
+          "type": "boolean",
+          "description": "Enable synchronization of Hull accounts with Nutshell"
+        },
+        {
+          "name": "account_attributes_outbound",
+          "title": "Send Account Attributes to Nutshell",
+          "description": "Specify all fields to send",
           "type": "array",
+          "format": "table",
           "default": [
             {
-              "hull": "name",
-              "nutshell": "contact.name",
-              "is_required": true
-            },
-            {
-              "hull": "email",
-              "nutshell": "contact.email",
-              "is_required": true
+              "hull_field_name": "account.name",
+              "nutshell_field_name": "name"
             }
           ],
           "items": {
             "type": "object",
             "properties": {
-              "hull": {
+              "hull_field_name": {
                 "type": "string",
-                "format": "template",
-                "title": "Hull Field"
+                "format": "trait",
+                "title": "Hull Attribute"
               },
-              "nutshell": {
+              "nutshell_field_name": {
                 "type": "string",
-                "title": "Nutshell Field"
+                "title": "Nutshell Field",
+                "format": "select",
+                "options": {
+                  "loadOptions": "/fields-account"
+                }
               },
-              "is_required": {
-                "title": "Is required",
-                "description": "Skip sync if this field is not defined",
-                "type": "boolean"
+              "hull_field_template": {
+                "type": "string",
+                "title": "Template",
+                "format": "liquid",
+                "options": {
+                  "help": "Use this editor to set outgoing attribute value, this overwrites Hull Attribute actual value",
+                  "edit_label": "Edit value template",
+                  "type": "none"
+                }
+              },
+              "overwrite": {
+                "type": "boolean",
+                "title": "overwrite",
+                "default": false
               }
             },
             "required": [
-              "hull",
-              "nutshell",
-              "is_required"
+              "nutshell_field_name"
+            ]
+          }
+        },
+        {
+          "name": "contactsync_title",
+          "title": "Contacts Data Mapping",
+          "format": "title",
+          "type": "string"
+        },
+        {
+          "name": "contact_attributes_outbound",
+          "title": "Send Contact Attributes to Nutshell",
+          "description": "Specify all fields to send",
+          "type": "array",
+          "format": "table",
+          "default": [
+            {
+              "hull_field_name": "name",
+              "nutshell_field_name": "name"
+            },
+            {
+              "hull_field_name": "email",
+              "nutshell_field_name": "email"
+            }
+          ],
+          "items": {
+            "type": "object",
+            "properties": {
+              "hull_field_name": {
+                "type": "string",
+                "format": "trait",
+                "title": "Hull Attribute"
+              },
+              "nutshell_field_name": {
+                "type": "string",
+                "title": "Nutshell Field",
+                "format": "select",
+                "options": {
+                  "loadOptions": "/fields-contact"
+                }
+              },
+              "hull_field_template": {
+                "type": "string",
+                "title": "Template",
+                "format": "liquid",
+                "options": {
+                  "help": "Use this editor to set outgoing attribute value, this overwrites Hull Attribute actual value",
+                  "edit_label": "Edit value template",
+                  "type": "none"
+                }
+              },
+              "overwrite": {
+                "type": "boolean",
+                "title": "overwrite",
+                "default": false
+              }
+            },
+            "required": [
+              "nutshell_field_name"
+            ]
+          }
+        },
+        {
+          "name": "leadsync_title",
+          "title": "Leads Data Mapping",
+          "format": "title",
+          "type": "string"
+        },
+        {
+          "name": "lead_attributes_outbound",
+          "title": "Send Lead Attributes to Nutshell",
+          "description": "Specify all fields to send",
+          "type": "array",
+          "format": "table",
+          "default": [],
+          "items": {
+            "type": "object",
+            "properties": {
+              "hull_field_name": {
+                "type": "string",
+                "format": "trait",
+                "title": "Hull Attribute"
+              },
+              "nutshell_field_name": {
+                "type": "string",
+                "title": "Nutshell Field",
+                "format": "select",
+                "options": {
+                  "loadOptions": "/fields-lead"
+                }
+              },
+              "hull_field_template": {
+                "type": "string",
+                "title": "Template",
+                "format": "liquid",
+                "options": {
+                  "help": "Use this editor to set outgoing attribute value, this overwrites Hull Attribute actual value",
+                  "edit_label": "Edit value template",
+                  "type": "none"
+                }
+              },
+              "overwrite": {
+                "type": "boolean",
+                "title": "overwrite",
+                "default": false
+              }
+            },
+            "required": [
+              "nutshell_field_name"
             ]
           }
         }
       ],
+      "admin": "admin",
+      "schedules": [
+        {
+          "url": "/status",
+          "type": "cron",
+          "value": "*/30 * * * *"
+        }
+      ],
       "subscriptions": [
         {
-          "url": "/notify"
+          "url": "/smart-notifier"
         }
       ]
     }
@@ -1364,7 +1538,8 @@
     "url": "https://hull-mailchimp.herokuapp.com/manifest.json",
     "manifest": {
       "name": "Mailchimp",
-      "description": "Synchronize Segments as Mailchimp Lists",
+      "version": "0.5.11",
+      "description": "Powerful segmentation and enrichment for Mailchimp - the world’s favorite email platform",
       "tags": [
         "outgoing",
         "incoming",
@@ -1372,14 +1547,21 @@
         "oneColumn",
         "smart-notifier"
       ],
+      "source": "mailchimp",
+      "logo": "logo.png",
       "picture": "picture.png",
       "admin": "/auth/",
-      "version": "0.5.2",
       "private_settings": [
         {
+          "name": "configuration_title",
+          "title": "Configuration",
+          "format": "title",
+          "type": "string"
+        },
+        {
           "name": "synchronized_segments",
-          "title": "Filtered Segments",
-          "description": "Only sync users in at least one these segments (Empty to send everyone)",
+          "title": "Send users to Mailchimp when belonging to at least one of these segments",
+          "description": "If no segments are specified all users are sent to Mailchimp.",
           "type": "array",
           "format": "segment"
         },
@@ -1419,6 +1601,12 @@
           "format": "hidden"
         },
         {
+          "name": "data_title",
+          "title": "Data Mapping",
+          "format": "title",
+          "type": "string"
+        },
+        {
           "name": "segment_mapping",
           "type": "object",
           "properties": {},
@@ -1438,7 +1626,7 @@
         },
         {
           "name": "sync_fields_to_mailchimp",
-          "title": "List of User attributes to push to Mailchimp",
+          "title": "Send the following user attributes to Mailchimp",
           "type": "array",
           "format": "table",
           "default": [
@@ -1488,6 +1676,13 @@
           "default": false,
           "type": "boolean",
           "format": "hidden"
+        },
+        {
+          "name": "fetch_user_activity_on_update",
+          "description": "When enabled it will get user activites on user:update",
+          "default": true,
+          "type": "boolean",
+          "format": "hidden"
         }
       ],
       "readme": "readme.md",
@@ -1523,11 +1718,21 @@
         "oneColumn",
         "smart-notifier"
       ],
+      "source": "processor",
+      "logo": "logo.png",
       "picture": "picture.png",
       "ui": false,
       "admin": "admin.html",
+      "tabs": [
+        {
+          "title": "Code Editor",
+          "url": "admin.html",
+          "size": "large",
+          "editable": true
+        }
+      ],
       "readme": "readme.md",
-      "version": "0.2.6",
+      "version": "0.2.19",
       "private_settings": [
         {
           "name": "sentry_dsn",
@@ -1546,9 +1751,23 @@
         }
       ],
       "resources": [],
+      "schedules": [
+        {
+          "url": "/status",
+          "type": "interval",
+          "value": "5"
+        }
+      ],
       "subscriptions": [
         {
-          "url": "/smart-notifier"
+          "url": "/smart-notifier",
+          "conditions": {
+            "channels": {
+              "only": [
+                "user:update"
+              ]
+            }
+          }
         }
       ]
     }
@@ -1558,8 +1777,10 @@
     "manifest": {
       "name": "Hubspot",
       "description": "Sync a Hubspot Channel whenever a User enters or leaves a Segment",
+      "source": "hubspot",
+      "logo": "logo.png",
       "picture": "picture.png",
-      "version": "0.3.14",
+      "version": "0.5.0",
       "tags": [
         "outgoing",
         "incoming",
@@ -1715,12 +1936,15 @@
         "outgoing",
         "incoming",
         "batch",
-        "oneColumn"
+        "oneColumn",
+        "smart-notifier"
       ],
       "index": "ship.js",
       "admin": "/auth/",
+      "source": "intercom",
+      "logo": "logo.png",
       "picture": "picture.png",
-      "version": "0.7.23",
+      "version": "0.9.6",
       "settings": [],
       "private_settings": [
         {
@@ -1896,7 +2120,19 @@
       "ui": false,
       "subscriptions": [
         {
-          "url": "/notify"
+          "url": "/smart-notifier",
+          "conditions": {
+            "channels": {
+              "only": [
+                "user:update",
+                "ship:update",
+                "users_segment:update",
+                "accounts_segment:update",
+                "segment:update",
+                "segment:delete"
+              ]
+            }
+          }
         }
       ],
       "schedules": [
@@ -1914,6 +2150,11 @@
           "url": "/status",
           "type": "cron",
           "value": "*/30 * * * *"
+        },
+        {
+          "url": "/fetch-segments",
+          "type": "interval",
+          "value": "60"
         }
       ]
     }
@@ -1924,7 +2165,9 @@
       "name": "SQL Importer",
       "description": "Import data from your SQL databases",
       "picture": "picture.png",
-      "version": "0.3.2",
+      "source": "sql",
+      "logo": "logo.png",
+      "version": "0.3.7",
       "tags": [
         "incoming",
         "oneColumn",
@@ -1963,8 +2206,6 @@
           "type": "string",
           "default": "180",
           "enum": [
-            "1",
-            "5",
             "30",
             "60",
             "180",
@@ -2117,6 +2358,8 @@
         "incoming",
         "oneColumn"
       ],
+      "source": "typeform",
+      "logo": "logo.png",
       "picture": "picture.png",
       "admin": "admin",
       "version": "0.2.2",
@@ -2209,8 +2452,10 @@
     "manifest": {
       "name": "Customer.io",
       "description": "Supercharge your email engagement in Customer.io",
+      "source": "customerio",
+      "logo": "logo.png",
       "picture": "picture.png",
-      "version": "0.1.6",
+      "version": "0.2.5",
       "tags": [
         "outgoing",
         "batch",
@@ -2331,8 +2576,16 @@
       "picture": "picture.png",
       "ui": false,
       "admin": "admin.html",
+      "tabs": [
+        {
+          "title": "Edit Code",
+          "url": "admin.html",
+          "size": "large",
+          "editable": true
+        }
+      ],
       "readme": "readme.md",
-      "version": "0.1.3",
+      "version": "0.1.4",
       "private_settings": [
         {
           "name": "code",
@@ -2360,6 +2613,8 @@
       "name": "Shortener",
       "description": "A Simple URL shortener that tracks clicks and allows you to retarget those audiences on social networks",
       "picture": "picture.png",
+      "source": "shortener",
+      "logo": "logo.png",
       "version": "0.1.0",
       "tags": [
         "smart-notifier",
@@ -2439,6 +2694,8 @@
     "manifest": {
       "name": "Hull-Closeio",
       "description": "Automate customer interactions with your close.io CRM",
+      "source": "closeio",
+      "logo": "logo.png",
       "picture": "picture.png",
       "version": "0.1.6",
       "tags": [
@@ -2636,10 +2893,20 @@
         "oneColumn"
       ],
       "ui": false,
+      "source": "scheduled-calls",
+      "logo": "logo.png",
       "picture": "picture.png",
       "admin": "admin.html",
+      "tabs": [
+        {
+          "title": "Edit Code",
+          "url": "admin.html",
+          "size": "large",
+          "editable": true
+        }
+      ],
       "readme": "readme.md",
-      "version": "0.0.1",
+      "version": "1.0.1",
       "private_settings": [
         {
           "type": "string",
@@ -2766,6 +3033,11 @@
           "type": "interval",
           "value_from": "private_settings.sync_interval",
           "default": "30"
+        },
+        {
+          "url": "/status",
+          "type": "interval",
+          "value": "30"
         }
       ]
     }
@@ -2782,19 +3054,39 @@
         "smart-notifier"
       ],
       "picture": "picture.png",
-      "version": "0.2.8",
+      "version": "0.3.0",
       "private_settings": [
         {
           "name": "webhooks_urls",
           "title": "Webhooks URLs",
-          "default": [
-            "https://example.com.com/webhooks/"
-          ],
+          "default": [],
           "type": "array",
           "format": "table",
           "items": {
             "type": "string"
           }
+        },
+        {
+          "name": "throttle_rate",
+          "title": "Requests rate limit",
+          "description": "Number of requests done every 1 second, the same rate limit will be applied separately to each webhook url above",
+          "default": 10,
+          "type": "number"
+        },
+        {
+          "name": "throttle_per_rate",
+          "title": "Time window for request throughput",
+          "description": "Set the number of milliseconds to define time unit where above rate limit will be applied",
+          "default": 1000,
+          "type": "number",
+          "format": "hidden"
+        },
+        {
+          "name": "concurrency",
+          "title": "Requests concurrency",
+          "description": "Number of maximum concurrent, in-flight requests done by connector",
+          "default": 10,
+          "type": "number"
         },
         {
           "name": "synchronized_segments",
@@ -2874,7 +3166,18 @@
       "ui": false,
       "subscriptions": [
         {
-          "url": "/smart-notifier"
+          "url": "/smart-notifier",
+          "conditions": {
+            "channels": {
+              "only": [
+                "user:update",
+                "ship:update",
+                "users_segment:update",
+                "accounts_segment:update",
+                "segment:update"
+              ]
+            }
+          }
         }
       ],
       "schedules": [
