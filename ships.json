@@ -1089,16 +1089,21 @@
       "description": "Target your Leads with Facebook Ads",
       "tags": [
         "outgoing",
-        "oneColumn",
         "smart-notifier"
       ],
       "source": "facebook-audiences",
       "logo": "logo.png",
       "picture": "picture.png",
       "ui": false,
-      "admin": "admin",
+      "tabs": [
+        {
+          "title": "Credentials & Actions",
+          "url": "admin",
+          "editable": false
+        }
+      ],
       "readme": "readme.md",
-      "version": "0.2.3",
+      "version": "0.3.5",
       "private_settings": [
         {
           "name": "facebook_access_token",
@@ -1115,10 +1120,41 @@
         {
           "name": "synchronized_segments",
           "title": "Segments",
-          "description": "Sync to Facebook these segments.",
+          "description": "Sync to Facebook these segments (deprecated, fill in table below)",
           "default": [],
           "type": "array",
-          "format": "segment"
+          "format": "hidden"
+        },
+        {
+          "name": "synchronized_segments_mapping_hero",
+          "type": "string",
+          "headerTemplate": "This table requires you to pick a data source value for each segment. Please refer to Facebook Ads documentation for more details.",
+          "format": "information",
+          "title": "New Whitelisted Segments"
+        },
+        {
+          "name": "synchronized_segments_mapping",
+          "title": "Hull Segments to sync as FB Audiences",
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "segment_id": {
+                "title": "Hull Segment",
+                "type": "string",
+                "format": "segment"
+              },
+              "customer_file_source": {
+                "title": "Data Source",
+                "type": "string",
+                "enum": [
+                  "USER_PROVIDED_ONLY",
+                  "PARTNER_PROVIDED_ONLY",
+                  "BOTH_USER_AND_PARTNER_PROVIDED"
+                ]
+              }
+            }
+          }
         },
         {
           "type": "string",
@@ -1780,7 +1816,7 @@
       "source": "hubspot",
       "logo": "logo.png",
       "picture": "picture.png",
-      "version": "0.5.0",
+      "version": "0.5.12",
       "tags": [
         "outgoing",
         "incoming",
@@ -1793,7 +1829,7 @@
         {
           "name": "synchronized_segments",
           "title": "Segments",
-          "description": "Post to Hubspot when users match these segments (Empty to send everyone)",
+          "description": "Post to Hubspot when users match these segments",
           "default": [],
           "type": "array",
           "format": "segment"
@@ -1901,7 +1937,14 @@
       "deployment_settings": [],
       "resources": [],
       "readme": "readme.md",
-      "admin": "/auth/",
+      "tabs": [
+        {
+          "title": "Credentials & Actions",
+          "url": "/auth/",
+          "size": "small",
+          "editable": false
+        }
+      ],
       "ui": false,
       "subscriptions": [
         {
@@ -1940,11 +1983,18 @@
         "smart-notifier"
       ],
       "index": "ship.js",
-      "admin": "/auth/",
+      "tabs": [
+        {
+          "title": "Actions",
+          "url": "/auth/",
+          "size": "small",
+          "editable": false
+        }
+      ],
       "source": "intercom",
       "logo": "logo.png",
       "picture": "picture.png",
-      "version": "0.9.6",
+      "version": "0.9.11",
       "settings": [],
       "private_settings": [
         {
@@ -2167,7 +2217,7 @@
       "picture": "picture.png",
       "source": "sql",
       "logo": "logo.png",
-      "version": "0.3.7",
+      "version": "0.3.16",
       "tags": [
         "incoming",
         "oneColumn",
@@ -2332,7 +2382,14 @@
       ],
       "resources": [],
       "readme": "readme.md",
-      "admin": "admin.html",
+      "tabs": [
+        {
+          "title": "Query Editor",
+          "url": "admin.html",
+          "size": "large",
+          "editable": true
+        }
+      ],
       "ui": false,
       "schedules": [
         {
@@ -2455,7 +2512,7 @@
       "source": "customerio",
       "logo": "logo.png",
       "picture": "picture.png",
-      "version": "0.2.5",
+      "version": "0.2.6",
       "tags": [
         "outgoing",
         "batch",
@@ -2578,14 +2635,14 @@
       "admin": "admin.html",
       "tabs": [
         {
-          "title": "Edit Code",
+          "title": "Code Editor",
           "url": "admin.html",
           "size": "large",
           "editable": true
         }
       ],
       "readme": "readme.md",
-      "version": "0.1.4",
+      "version": "0.1.5",
       "private_settings": [
         {
           "name": "code",
@@ -2725,16 +2782,16 @@
           "type": "string"
         },
         {
-          "name": "synchronized_segments",
-          "title": "Send users to Close.io when belonging to one of these segments",
+          "name": "synchronized_account_segments",
+          "title": "Send *accounts* as leads to Close.io when belonging to one of these segments",
           "type": "array",
           "default": [],
-          "format": "segment"
+          "format": "accountSegment"
         },
         {
           "name": "synchronized_segments_hero",
           "type": "string",
-          "headerTemplate": "The above list of segments is a whitelist. You need to *explicitely specify one or more segments* for which users and events shall be sent to Close.io.<br>If you do not specify any segment, no user or event will be sent to Close.io.",
+          "headerTemplate": "The above lists of segments are whitelists. You need to *explicitely specify one or more segments* for which users or accounts and events shall be sent to Close.io.<br>If you do not specify any segment, no user, account or event will be sent to Close.io.",
           "format": "information",
           "title": "Whitelisted Segments"
         },
@@ -2746,6 +2803,26 @@
           "default": "hull-default",
           "options": {
             "loadOptions": "/leadstatuses"
+          }
+        },
+        {
+          "name": "lead_identifier_hull",
+          "title": "The attribute to uniquely identify an account in Hull",
+          "type": "string",
+          "format": "select",
+          "default": "domain",
+          "options": {
+            "loadOptions": "/fields-account-ident"
+          }
+        },
+        {
+          "name": "lead_identifier_service",
+          "title": "The field to uniquely identify a lead in close.io",
+          "type": "string",
+          "format": "select",
+          "default": "url",
+          "options": {
+            "loadOptions": "/fields-lead-out"
           }
         },
         {
@@ -2762,7 +2839,7 @@
           "format": "table",
           "default": [
             {
-              "hull_field_name": "account.name",
+              "hull_field_name": "name",
               "closeio_field_name": "name"
             }
           ],
@@ -2779,7 +2856,7 @@
                 "title": "Close.io Field",
                 "format": "select",
                 "options": {
-                  "loadOptions": "/fields-lead"
+                  "loadOptions": "/fields-lead-out"
                 }
               }
             },
@@ -2795,7 +2872,7 @@
           "type": "array",
           "format": "select",
           "options": {
-            "loadOptions": "/fields-lead"
+            "loadOptions": "/fields-lead-in"
           }
         },
         {
@@ -2866,7 +2943,7 @@
     }
   },
   {
-    "url": "https://hull-google-sheets.herokuapp.com/manifest.json",
+    "url": "https://google-sheets.connectors.hullapp.net/manifest.json",
     "manifest": {
       "name": "Google Sheets importer",
       "description": "Import data from your Google Sheets",
@@ -2878,7 +2955,21 @@
       "ui": false,
       "readme": "readme.md",
       "version": "0.2.0",
-      "admin": "admin.html"
+      "tabs": [
+        {
+          "title": "Install & Credentials",
+          "url": "admin.html",
+          "size": "small",
+          "editable": false
+        }
+      ],
+      "schedules": [
+        {
+          "url": "/status",
+          "type": "cron",
+          "value": "*/5 * * * *"
+        }
+      ]
     }
   },
   {
@@ -2899,7 +2990,7 @@
       "admin": "admin.html",
       "tabs": [
         {
-          "title": "Edit Code",
+          "title": "Code Editor",
           "url": "admin.html",
           "size": "large",
           "editable": true
@@ -3054,7 +3145,7 @@
         "smart-notifier"
       ],
       "picture": "picture.png",
-      "version": "0.3.0",
+      "version": "0.3.1",
       "private_settings": [
         {
           "name": "webhooks_urls",
