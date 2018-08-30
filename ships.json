@@ -1128,9 +1128,9 @@
         {
           "name": "synchronized_segments_mapping_hero",
           "type": "string",
-          "headerTemplate": "This table requires you to pick a data source value for each segment. Please refer to Facebook Ads documentation for more details.",
+          "headerTemplate": "Select the Segments to sync with Facebook Audiences and pick a data source value for each segment. Please refer to Facebook Ads documentation for more details.",
           "format": "information",
-          "title": "New Whitelisted Segments"
+          "title": "Whitelisted Segments"
         },
         {
           "name": "synchronized_segments_mapping",
@@ -1816,7 +1816,7 @@
       "source": "hubspot",
       "logo": "logo.png",
       "picture": "picture.png",
-      "version": "0.5.12",
+      "version": "0.5.13",
       "tags": [
         "outgoing",
         "incoming",
@@ -2402,104 +2402,6 @@
           "url": "/status",
           "type": "cron",
           "value": "30 * * * *"
-        }
-      ]
-    }
-  },
-  {
-    "url": "https://hull-typeform.herokuapp.com/manifest.json",
-    "manifest": {
-      "name": "Typeform",
-      "description": "Fetch form responses",
-      "tags": [
-        "incoming",
-        "oneColumn"
-      ],
-      "source": "typeform",
-      "logo": "logo.png",
-      "picture": "picture.png",
-      "admin": "admin",
-      "version": "0.2.2",
-      "settings": [],
-      "private_settings": [
-        {
-          "name": "api_key",
-          "title": "Typeform API key",
-          "description": "Click on \"My Account\" and you will find your key at the bottom of the page.",
-          "type": "string"
-        },
-        {
-          "name": "typeform_uid",
-          "title": "Form",
-          "type": "string",
-          "format": "select",
-          "options": {
-            "allowCreate": false,
-            "loadOptions": "/schema/typeforms"
-          }
-        },
-        {
-          "name": "question_as_email",
-          "title": "Select the field matching the user email",
-          "description": "You can only pick fields of type email",
-          "type": "string",
-          "format": "select",
-          "options": {
-            "allowCreate": false,
-            "loadOptions": "/schema/questions/email"
-          }
-        },
-        {
-          "name": "sync_answers_to_hull",
-          "title": "List of form questions to save into Hull",
-          "description": "Date fields should be saved to traits ending with _date suffix",
-          "type": "array",
-          "format": "table",
-          "default": [],
-          "items": {
-            "type": "object",
-            "properties": {
-              "question_id": {
-                "type": "string",
-                "format": "select",
-                "title": "Typeform Question",
-                "options": {
-                  "allowCreate": true,
-                  "loadOptions": "/schema/questions"
-                }
-              },
-              "hull": {
-                "type": "string",
-                "format": "trait",
-                "title": "Hull Attributes",
-                "options": {
-                  "allowCreate": true,
-                  "source": "typeform"
-                }
-              }
-            },
-            "required": [
-              "question_id",
-              "hull"
-            ]
-          }
-        },
-        {
-          "name": "last_fetch_at",
-          "title": "API key",
-          "type": "string",
-          "format": "hidden"
-        }
-      ],
-      "deployment_settings": [],
-      "resources": [],
-      "readme": "readme.md",
-      "ui": false,
-      "schedules": [
-        {
-          "url": "/fetch",
-          "type": "cron",
-          "value": "*/5 * * * *"
         }
       ]
     }
